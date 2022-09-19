@@ -57,6 +57,18 @@ export default class Object
             this.debug.ui.add(floorMat.uniforms.uAreaPower, 'value')
                 .min(0).max(10).step(0.01).name('areaPower')
         }
+
+        const shadowPlaneGeo = new THREE.PlaneGeometry(2.5, 2.5, 1, 1)
+        const shadowPlaneMat = new THREE.MeshStandardMaterial({
+            color: '#f0f0f0',
+            side: THREE.DoubleSide,
+            transparent: true
+        });
+        const shadowPlaneMesh = new THREE.Mesh(shadowPlaneGeo, shadowPlaneMat)
+        shadowPlaneMesh.rotation.x = Math.PI * -0.5;
+        shadowPlaneMesh.position.y = -0.199;
+        shadowPlaneMesh.receiveShadow = true
+        // this.scene.add(shadowPlaneMesh);
     }
 
     setCharacter()
