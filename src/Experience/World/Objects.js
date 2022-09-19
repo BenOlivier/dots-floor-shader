@@ -9,9 +9,11 @@ export default class Object
     {
         this.experience = new Experience()
         this.scene = this.experience.scene
+        this.resources = this.experience.resources
         this.debug = this.experience.debug
 
         this.setFloor()
+        this.setCharacter()
     }
 
     setFloor()
@@ -27,7 +29,6 @@ export default class Object
             fragmentShader: floorFrag,
             uniforms:
             {
-                // uSmallWavesIterations: { value: 4 },
                 uDotsColor: { value: new THREE.Color(debugObject.dotsColor) },
                 uGridScale: { value: 50 },
                 uDotRadius: { value: 0.1 },
@@ -36,8 +37,9 @@ export default class Object
             }
         });
         const floorMesh = new THREE.Mesh(floorGeo, floorMat)
-        floorMesh.rotation.x = Math.PI * -0.5
-        this.scene.add(floorMesh)
+        floorMesh.rotation.x = Math.PI * -0.5;
+        floorMesh.position.y = -0.2;
+        this.scene.add(floorMesh);
 
         // Debug
         if(this.debug.active)
@@ -55,5 +57,35 @@ export default class Object
             this.debug.ui.add(floorMat.uniforms.uAreaPower, 'value')
                 .min(0).max(10).step(0.01).name('areaPower')
         }
+    }
+
+    setCharacter()
+    {
+        const characterResource = this.resources.items.characterModel;
+
+        const character = characterResource.scene
+        character.scale.set(0.2, 0.2, 0.2)
+        character.position.y = -0.2
+        character.rotation.y = Math.PI;
+        this.scene.add(character)
+
+        character.traverse((child) =>
+        {
+            if(child instanceof THREE.Mesh)
+            {
+                child.castShadow = true
+            }
+        })
+
+        this.animation = {}
+        
+        // Mixer
+        this.animation.mixer = new THREE.AnimationMixer(this.character)
+        
+        // Actions
+        // this.animation.action = this.animation.mixer.clipAction(this.characterResource.animations[0])
+        
+        // this.animation.actions.current = this.animation.actions.idle
+        // this.animation.actions.current.play()
     }
 }

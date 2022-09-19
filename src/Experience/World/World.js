@@ -1,6 +1,6 @@
 import Experience from '../Experience.js'
 import Environment from './Environment.js'
-import Object from './Object.js'
+import Objects from './Objects.js'
 
 export default class World
 {
@@ -15,7 +15,7 @@ export default class World
         {
             // Setup
             this.environment = new Environment()
-            this.object = new Object()
+            this.objects = new Objects()
         })
     }
 }

@@ -1,7 +1,7 @@
 export default [
     {
-        name: 'objectModel',
+        name: 'characterModel',
         type: 'gltfModel',
-        path: 'models/DefaultCube.glb'
+        path: 'models/roblox_deadpool.glb'
     }
 ]
