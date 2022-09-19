@@ -1,7 +1,6 @@
 import * as THREE from 'three'
 import Debug from './Utils/Debug.js'
 import Sizes from './Utils/Sizes.js'
-import Loading from './Utils/Loading.js'
 import Time from './Utils/Time.js'
 import Camera from './World/Camera.js'
 import Pointer from './Utils/Pointer.js'
@@ -34,7 +33,6 @@ export default class Experience
         this.sizes = new Sizes()
         this.time = new Time()
         this.scene = new THREE.Scene()
-        this.loading = new Loading()
         this.resources = new Resources(sources)
         this.camera = new Camera()
         this.pointer = new Pointer()
@@ -62,7 +60,6 @@ export default class Experience
 
     update()
     {
-        this.world.update()
         this.renderer.update()
         this.camera.update()
     }

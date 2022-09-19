@@ -26,12 +26,6 @@ export default class Resources extends EventEmitter
     {
         this.loaders = {}
         this.loadingManager = new THREE.LoadingManager(
-            // Loaded
-            () =>
-            {
-                this.experience.loading.initiateLoadedSequence()
-            },
-
             // Progress
             (itemUrl, itemsLoaded, itemsTotal) =>
             {
