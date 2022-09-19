@@ -17,9 +17,6 @@ export default class Renderer
 
     setRenderer()
     {
-        const debugObject = {}
-        debugObject.backgroundColor = '#f0f0f0'
-        
         this.renderer = new THREE.WebGLRenderer({
             canvas: this.canvas,
             antialias: true,
@@ -31,18 +28,8 @@ export default class Renderer
         this.renderer.toneMappingExposure = 1.75
         this.renderer.shadowMap.enabled = true
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
-        this.renderer.setClearColor(debugObject.backgroundColor)
         this.renderer.setSize(this.sizes.width, this.sizes.height)
         this.renderer.setPixelRatio(Math.min(this.sizes.pixelRatio, 2))
-
-        if(this.debug.active)
-        {
-            this.debug.ui.addColor(debugObject, 'backgroundColor')
-            .name('backgroundColor').onChange(() =>
-            {
-                this.renderer.setClearColor(debugObject.backgroundColor)
-            })
-        }
     }
 
     resize()

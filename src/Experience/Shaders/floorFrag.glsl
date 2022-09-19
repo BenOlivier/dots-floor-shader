@@ -9,7 +9,7 @@ uniform float uAreaPower;
 void main()
 {
     // Value to offset every other row by 0.5
-    float offsetrows = step(mod(vUv.y * (uGridScale * 0.5), 1.0), 0.5) * 0.25;
+    float offsetrows = step(mod(vUv.y * (uGridScale * 0.5), 1.0), 0.5) * 0.5;
     // Tiled UV coordinates
     vec2 tiledUv = mod((vUv + vec2(offsetrows, 0.0)) * uGridScale, 1.0);
     // Grid of dots
