@@ -59,8 +59,9 @@ export default class Object
         }
 
         const shadowPlaneGeo = new THREE.PlaneGeometry(2.5, 2.5, 1, 1)
-        const shadowPlaneMat = new THREE.MeshStandardMaterial({
-            color: '#f0f0f0',
+        const shadowPlaneMat = new THREE.ShadowMaterial({
+            color: '#444444',
+            opacity: 0.5,
             side: THREE.DoubleSide,
             transparent: true
         });
@@ -68,7 +69,7 @@ export default class Object
         shadowPlaneMesh.rotation.x = Math.PI * -0.5;
         shadowPlaneMesh.position.y = -0.199;
         shadowPlaneMesh.receiveShadow = true
-        // this.scene.add(shadowPlaneMesh);
+        this.scene.add(shadowPlaneMesh);
     }
 
     setCharacter()
