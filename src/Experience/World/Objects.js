@@ -19,7 +19,7 @@ export default class Object
     setFloor()
     {
         const debugObject = {}
-        debugObject.dotsColor = '#808080'
+        debugObject.dotsColor = '#c8c8c8'
         
         const floorGeo = new THREE.PlaneGeometry(2.5, 2.5, 1, 1)
         const floorMat = new THREE.ShaderMaterial({
