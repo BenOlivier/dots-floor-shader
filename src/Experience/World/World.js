@@ -18,4 +18,9 @@ export default class World
             this.objects = new Objects()
         })
     }
+
+    update()
+    {
+        if(this.objects) this.objects.update()
+    }
 }

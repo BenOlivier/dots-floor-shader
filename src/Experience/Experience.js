@@ -60,6 +60,7 @@ export default class Experience
 
     update()
     {
+        this.world.update()
         this.renderer.update()
         this.camera.update()
     }

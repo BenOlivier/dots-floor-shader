@@ -11,6 +11,7 @@ export default class Object
         this.scene = this.experience.scene
         this.resources = this.experience.resources
         this.debug = this.experience.debug
+        this.time = this.experience.time
 
         this.setFloor()
         this.setCharacter()
@@ -91,14 +92,16 @@ export default class Object
         })
 
         this.animation = {}
+        this.animation.mixer = new THREE.AnimationMixer(character)
+
+        this.animation.actions = {}
+        this.animation.actions.main = this.animation.mixer.clipAction(characterResource.animations[0])
         
-        // Mixer
-        this.animation.mixer = new THREE.AnimationMixer(this.character)
-        
-        // Actions
-        // this.animation.action = this.animation.mixer.clipAction(this.characterResource.animations[0])
-        
-        // this.animation.actions.current = this.animation.actions.idle
-        // this.animation.actions.current.play()
+        this.animation.actions.main.play()
+    }
+
+    update()
+    {
+        this.animation.mixer.update(this.time.delta * 0.001)
     }
 }
