@@ -25,7 +25,7 @@ export default class Object
 
     setFloor()
     {
-        this.debugObject.dotsColor = '#a1a1a1'
+        this.debugObject.dotsColor = '#c9c9c9'
         
         const floorGeo = new THREE.PlaneGeometry(10, 10, 1, 1)
         const floorMat = new THREE.ShaderMaterial({
@@ -83,8 +83,8 @@ export default class Object
 
     setBackground()
     {
-        this.debugObject.backgroundColor1 = '#ecf1f4'
-        this.debugObject.backgroundColor2 = '#c8c6c8'
+        this.debugObject.backgroundColor1 = '#f2f5f8'
+        this.debugObject.backgroundColor2 = '#e7e4e7'
         const backgroundGeo = new THREE.SphereGeometry(20, 32, 32)
         const backgroundMat = new THREE.ShaderMaterial({
             side: THREE.BackSide,
