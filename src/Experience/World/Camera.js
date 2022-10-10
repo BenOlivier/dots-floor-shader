@@ -12,32 +12,11 @@ export default class Camera
         this.scene = this.experience.scene
         this.canvas = this.experience.canvas
         this.debug = this.experience.debug
-        this.debugFolder = this.debug.ui.addFolder('camera')
+        this.loading = this.experience.loading
 
-        this.startPos = new THREE.Vector3(-4, 2, 0)
-        this.endPos = new THREE.Vector3(0.2, 0.4, 1.2)
+        this.startPos = new THREE.Vector3(-0.5, 0, 2)
+        this.endPos = new THREE.Vector3(0.25, 0.4, 1.2)
         this.lookAtPos = new THREE.Vector3(0, 0, 0)
-
-        if(this.debug.active)
-        {
-            const debugObject = {
-                1: () => {
-                    this.startPos = new THREE.Vector3(-4, 2, 0)
-                    this.animateCamera()
-                },
-                2: () => {
-                    this.startPos = new THREE.Vector3(0, 6, 6)
-                    this.animateCamera()
-                },
-                3: () => {
-                    this.startPos = new THREE.Vector3(-0.5, 0, 2)
-                    this.animateCamera()
-                },
-            }
-            this.debugFolder.add(debugObject, '1')
-            this.debugFolder.add(debugObject, '2')
-            this.debugFolder.add(debugObject, '3')
-        }
 
         this.setCamera()
         this.setControls()
@@ -49,7 +28,6 @@ export default class Camera
             (35, this.sizes.width / this.sizes.height, 0.1, 100)
         this.camera.position.set(this.startPos.x, this.startPos.y, this.startPos.z)
         this.scene.add(this.camera)
-        this.animateCamera()
     }
 
     setControls()

@@ -12,6 +12,7 @@ export default class Resources extends EventEmitter
         this.sources = sources
         this.experience = new Experience()
         this.debug = this.experience.debug
+        this.loading = this.experience.loading
 
         this.items = {}
         this.toLoad = this.sources.length
@@ -26,6 +27,13 @@ export default class Resources extends EventEmitter
     {
         this.loaders = {}
         this.loadingManager = new THREE.LoadingManager(
+            // Loaded
+            () =>
+            {
+                this.loading.setLoadingBar()
+                this.loading.setOverlay()
+                this.loading.initiateLoadedSequence()
+            },
             // Progress
             (itemUrl, itemsLoaded, itemsTotal) =>
             {

@@ -15,12 +15,14 @@ export default class Object
         this.debug = this.experience.debug
         this.time = this.experience.time
 
-        this.debugFolder = this.debug.ui.addFolder('environment')
-        this.debugFolder.close()
         this.debugObject = {}
+        if(this.debug.active)
+        {
+            this.debugFolder = this.debug.ui.addFolder('environment')
+            this.debugFolder.close()
+        }
 
         this.setFloor()
-        // this.setUnderFloor()
         this.setShadowPlane()
         this.setBackground()
         this.setCharacter()
