@@ -27,7 +27,7 @@ export default class Loading
 
         // Parameters
         this.params = {
-            loadingDuration: 100,
+            loadingDuration: 4,
             previewFadeTime: 1,
             barLength: 0.5,
             barAnimationDuration: 1,
