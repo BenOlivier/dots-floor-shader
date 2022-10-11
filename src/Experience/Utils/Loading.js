@@ -18,6 +18,8 @@ export default class Loading
         this.camera = this.experience.camera
         this.loadingText = document.querySelector('#text')
         this.debugObject = {}
+        this.character = {}
+        this.cap = {}
 
         // Events
         this.sizes.on('resize', () =>
@@ -27,8 +29,8 @@ export default class Loading
 
         // Parameters
         this.params = {
-            loadingDuration: 4,
-            previewFadeTime: 1,
+            loadingDuration: 2.5,
+            previewFadeTime: 0.8,
             barLength: 0.5,
             barAnimationDuration: 1,
             barAnimationDelay: 0.5,
@@ -40,11 +42,23 @@ export default class Loading
             // this.debugFolder.close()
 
             const debugObject = {
-                Reload: () => {
+                Load_Character: () => {
+                    this.character.visible = true
+                    this.cap.visible = false
+                    this.camera.startPos = new THREE.Vector3(-0.5, 0, 2)
+                    this.camera.endPos = new THREE.Vector3(0.25, 0.4, 1.2)
+                    this.initiateLoadedSequence()
+                },
+                Load_Item: () => {
+                    this.character.visible = false
+                    this.cap.visible = true
+                    this.camera.startPos = new THREE.Vector3(-0.1, 0, 1)
+                    this.camera.endPos = new THREE.Vector3(0.1, 0.1, 0.5)
                     this.initiateLoadedSequence()
                 }
             }
-            this.debugFolder.add(debugObject, 'Reload')
+            this.debugFolder.add(debugObject, 'Load_Character')
+            this.debugFolder.add(debugObject, 'Load_Item')
             this.debugFolder.add(this.params, 'loadingDuration')
                 .min(0).max(10).step(0.1).name('loadingDuration')
             this.debugFolder.add(this.params, 'previewFadeTime')
@@ -93,10 +107,10 @@ export default class Loading
     setLoadingBar()
     {
         this.loadingBarWidth = 500 / this.sizes.width
-        this.loadingBarHeight = 8 / this.sizes.height
+        this.loadingBarHeight = 8.5 / this.sizes.height
 
-        this.debugObject.barColor = '#517bff'
-        this.debugObject.backgroundColor = '#323232'
+        this.debugObject.barColor = '#5797ff'
+        this.debugObject.backgroundColor = '#5f5f5f'
         
         this.loadingBarGeometry = new THREE.PlaneGeometry(
             this.loadingBarWidth, this.loadingBarHeight, 1, 1)

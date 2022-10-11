@@ -14,6 +14,7 @@ export default class Object
         this.resources = this.experience.resources
         this.debug = this.experience.debug
         this.time = this.experience.time
+        this.loading = this.experience.loading
 
         this.debugObject = {}
         if(this.debug.active)
@@ -26,11 +27,12 @@ export default class Object
         this.setShadowPlane()
         this.setBackground()
         this.setCharacter()
+        this.setCap()
     }
 
     setFloor()
     {
-        this.debugObject.dotsColor = '#c9c9c9'
+        this.debugObject.dotsColor = '#d1d1d1'
         
         const floorGeo = new THREE.PlaneGeometry(10, 10, 1, 1)
         const floorMat = new THREE.ShaderMaterial({
@@ -149,6 +151,7 @@ export default class Object
         character.position.y = -0.2
         character.rotation.y = Math.PI
         this.scene.add(character)
+        this.loading.character = character
 
         character.traverse((child) =>
         {
@@ -165,6 +168,27 @@ export default class Object
         this.animation.actions.main = this.animation.mixer.clipAction(characterResource.animations[0])
         
         this.animation.actions.main.play()
+    }
+
+    setCap()
+    {
+        const capResource = this.resources.items.capModel
+
+        const cap = capResource.scene
+        cap.scale.set(0.02, 0.02, 0.02)
+        // cap.position.y = 0.1
+        // cap.rotation.y = Math.PI
+        cap.visible = false
+        this.scene.add(cap)
+        this.loading.cap = cap
+
+        cap.traverse((child) =>
+        {
+            if(child instanceof THREE.Mesh)
+            {
+                // child.castShadow = true
+            }
+        })
     }
 
     update()
