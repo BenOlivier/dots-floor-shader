@@ -103,8 +103,8 @@ export default class Object
 
     setBackground()
     {
-        this.debugObject.backgroundColor1 = '#f2f5f8'
-        this.debugObject.backgroundColor2 = '#e7e4e7'
+        this.debugObject.backgroundColor1 = '#f0ffff'
+        this.debugObject.backgroundColor2 = '#fffaff'
         const backgroundGeo = new THREE.SphereGeometry(20, 32, 32)
         const backgroundMat = new THREE.ShaderMaterial({
             side: THREE.BackSide,
@@ -113,10 +113,13 @@ export default class Object
             uniforms:
             {
                 uColor1: { value: new THREE.Color(this.debugObject.backgroundColor1) },
-                uColor2: { value: new THREE.Color(this.debugObject.backgroundColor2) }
+                uColor2: { value: new THREE.Color(this.debugObject.backgroundColor2) },
+                uGradientRange: { value: 1 },
+                uGradientOffset: { value: -0.3 },
             }
         })
         const backgroundMesh = new THREE.Mesh(backgroundGeo, backgroundMat)
+        backgroundMesh.rotation.z = Math.PI * 0.5
         this.scene.add(backgroundMesh)
 
         // Debug
@@ -130,6 +133,10 @@ export default class Object
             {
                 (backgroundMat.uniforms.uColor2.value.set(this.debugObject.backgroundColor2))
             })
+            this.debugFolder.add(backgroundMat.uniforms.uGradientRange, 'value')
+                .min(0).max(10).step(0.1).name('gradientRange')
+            this.debugFolder.add(backgroundMat.uniforms.uGradientOffset, 'value')
+                .min(-10).max(10).step(0.1).name('gradientOffset')
         }
     }
 

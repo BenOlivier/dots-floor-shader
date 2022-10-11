@@ -27,7 +27,9 @@ export default class Loading
 
         // Parameters
         this.params = {
+            loadingDuration: 100,
             previewFadeTime: 1,
+            barLength: 0.5,
             barAnimationDuration: 1,
             barAnimationDelay: 0.5,
         }
@@ -43,16 +45,17 @@ export default class Loading
                 }
             }
             this.debugFolder.add(debugObject, 'Reload')
+            this.debugFolder.add(this.params, 'loadingDuration')
+                .min(0).max(10).step(0.1).name('loadingDuration')
             this.debugFolder.add(this.params, 'previewFadeTime')
                 .min(0).max(5).step(0.1).name('previewFadeTime')
+            this.debugFolder.add(this.params, 'barLength')
+                .min(0).max(3).step(0.1).name('barLength')
             this.debugFolder.add(this.params, 'barAnimationDuration')
                 .min(0).max(3).step(0.1).name('barAnimationDuration')
             this.debugFolder.add(this.params, 'barAnimationDelay')
                 .min(0).max(3).step(0.1).name('barAnimationDelay')
         }
-
-        // this.setLoadingBar()
-        // this.setOverlay()
     }
 
     setOverlay()
@@ -160,7 +163,7 @@ export default class Loading
             value: 1,
             duration: this.params.barAnimationDuration,
             ease: 'power3.in',
-            delay: 0,
+            delay: 0,//this.params.barLength,
             repeat: -1,
             repeatDelay: this.params.barAnimationDelay
         })
@@ -169,14 +172,14 @@ export default class Loading
         gsap.to(this.loadingBarMaterial.uniforms.uAlpha, {
             value: 0,
             duration: 0.3,
-            delay: 4,
+            delay: this.params.loadingDuration,
             ease: 'linear',
         })
         // Fade out text
         gsap.to(this.loadingText.style, {
             opacity: 0,
             duration: 0.3,
-            delay: 4,
+            delay: this.params.loadingDuration,
             ease: 'linear'
         })
     }
@@ -189,7 +192,7 @@ export default class Loading
         gsap.to(this.overlayMaterial.uniforms.uAlpha, {
             value: 0,
             duration: this.params.previewFadeTime,
-            delay: 4,
+            delay: this.params.loadingDuration,
             ease: 'linear',
             callbackScope: this,
             onStart: function () {
