@@ -1,7 +1,11 @@
 import * as THREE from 'three'
 import Experience from '../Experience.js'
+import dotsVert from '../Shaders/dotsVert.glsl'
+import dotsFrag from '../Shaders/dotsFrag.glsl'
 import floorVert from '../Shaders/floorVert.glsl'
 import floorFrag from '../Shaders/floorFrag.glsl'
+import podiumVert from '../Shaders/podiumVert.glsl'
+import podiumFrag from '../Shaders/podiumFrag.glsl'
 import backgroundVert from '../Shaders/backgroundVert.glsl'
 import backgroundFrag from '../Shaders/backgroundFrag.glsl'
 
@@ -19,12 +23,24 @@ export default class Object
         this.debugObject = {}
         if(this.debug.active)
         {
-            this.debugFolder = this.debug.ui.addFolder('environment')
-            this.debugFolder.close()
+            this.dotsDebugFolder = this.debug.ui.addFolder('dots')
+            this.backgroundDebugFolder = this.debug.ui.addFolder('background')
+            this.floorDebugFolder = this.debug.ui.addFolder('floor')
+            this.podiumDebugFolder = this.debug.ui.addFolder('podium')
+            this.dotsDebugFolder.close()
+            this.backgroundDebugFolder.close()
+            this.floorDebugFolder.close()
+            // this.podiumFolder.close()
+        }
+
+        this.params = {
+            shadowOpacity: 0.1,
         }
 
         this.setFloor()
+        this.setDots()
         this.setShadowPlane()
+        this.setPodium()
         this.setBackground()
         this.setCharacter()
         this.setCap()
@@ -32,7 +48,7 @@ export default class Object
 
     setFloor()
     {
-        this.debugObject.dotsColor = '#d1d1d1'
+        this.debugObject.floorColor = '#ffffff'
         
         const floorGeo = new THREE.PlaneGeometry(10, 10, 1, 1)
         const floorMat = new THREE.ShaderMaterial({
@@ -42,9 +58,7 @@ export default class Object
             fragmentShader: floorFrag,
             uniforms:
             {
-                uDotsColor: { value: new THREE.Color(this.debugObject.dotsColor) },
-                uGridScale: { value: 155 },
-                uDotRadius: { value: 0.08 },
+                uFloorColor: { value: new THREE.Color(this.debugObject.floorColor) },
                 uAreaRadius: { value: 2 },
                 uAreaPower: { value: 0.5 },
             }
@@ -57,34 +71,57 @@ export default class Object
         // Debug
         if(this.debug.active)
         {
-            this.debugFolder.addColor(this.debugObject, 'dotsColor').name('dotsColor').onChange(() =>
+            this.floorDebugFolder.addColor(this.debugObject, 'floorColor').name('floorColor').onChange(() =>
             {
-                (floorMat.uniforms.uDotsColor.value.set(this.debugObject.dotsColor))
+                (floorMat.uniforms.uFloorColor.value.set(this.debugObject.floorColor))
             })
-            this.debugFolder.add(floorMat.uniforms.uGridScale, 'value')
-                .min(1).max(200).step(1).name('gridScale')
-            this.debugFolder.add(floorMat.uniforms.uDotRadius, 'value')
-                .min(0).max(0.5).step(0.001).name('dotRadius')
-            this.debugFolder.add(floorMat.uniforms.uAreaRadius, 'value')
+            this.floorDebugFolder.add(floorMat.uniforms.uAreaRadius, 'value')
                 .min(0).max(10).step(0.01).name('areaRadius')
-            this.debugFolder.add(floorMat.uniforms.uAreaPower, 'value')
+            this.floorDebugFolder.add(floorMat.uniforms.uAreaPower, 'value')
                 .min(0).max(10).step(0.01).name('areaPower')
         }
     }
 
-    setUnderFloor()
+    setDots()
     {
-        const underFloorGeo = new THREE.PlaneGeometry(10, 10, 1, 1)
-        const underFloorMat = new THREE.MeshStandardMaterial({
-            color: '#ff0000',
+        this.debugObject.dotsColor = '#dbdbdb'
+        
+        const dotsGeo = new THREE.PlaneGeometry(10, 10, 1, 1)
+        const dotsMat = new THREE.ShaderMaterial({
             transparent: true,
-            opacity: 0.5
-        })
-        // underFloorMat.side = THREE.FrontSide()
-        const underFloorMesh = new THREE.Mesh(underFloorGeo, underFloorMat)
-        underFloorMesh.rotation.x = Math.PI * 0.5;
-        underFloorMesh.position.y = -0.2;
-        this.scene.add(underFloorMesh);
+            side: THREE.FrontSide,
+            vertexShader: dotsVert,
+            fragmentShader: dotsFrag,
+            uniforms:
+            {
+                uDotsColor: { value: new THREE.Color(this.debugObject.dotsColor) },
+                uGridScale: { value: 301 },
+                uDotRadius: { value: 0.08 },
+                uAreaRadius: { value: 2 },
+                uAreaPower: { value: 0.5 },
+            }
+        });
+        const dotsMesh = new THREE.Mesh(dotsGeo, dotsMat)
+        dotsMesh.rotation.x = Math.PI * -0.5;
+        dotsMesh.position.y = -0.2;
+        this.scene.add(dotsMesh);
+
+        // Debug
+        if(this.debug.active)
+        {
+            this.dotsDebugFolder.addColor(this.debugObject, 'dotsColor').name('dotsColor').onChange(() =>
+            {
+                (dotsMat.uniforms.uDotsColor.value.set(this.debugObject.dotsColor))
+            })
+            this.dotsDebugFolder.add(dotsMat.uniforms.uGridScale, 'value')
+                .min(1).max(500).step(1).name('gridScale')
+            this.dotsDebugFolder.add(dotsMat.uniforms.uDotRadius, 'value')
+                .min(0).max(0.5).step(0.001).name('dotRadius')
+            this.dotsDebugFolder.add(dotsMat.uniforms.uAreaRadius, 'value')
+                .min(0).max(10).step(0.01).name('areaRadius')
+            this.dotsDebugFolder.add(dotsMat.uniforms.uAreaPower, 'value')
+                .min(0).max(10).step(0.01).name('areaPower')
+        }
     }
 
     setShadowPlane()
@@ -92,21 +129,86 @@ export default class Object
         const shadowPlaneGeo = new THREE.PlaneGeometry(2, 2, 1, 1)
         const shadowPlaneMat = new THREE.ShadowMaterial({
             color: '#000000',
-            opacity: 0.5,
-            // side: THREE.DoubleSide,
+            opacity: this.params.shadowOpacity,
             transparent: true
         });
         const shadowPlaneMesh = new THREE.Mesh(shadowPlaneGeo, shadowPlaneMat)
         shadowPlaneMesh.rotation.x = Math.PI * -0.5;
-        shadowPlaneMesh.position.y = -0.199;
-        shadowPlaneMesh.receiveShadow = true
-        this.scene.add(shadowPlaneMesh)
+        shadowPlaneMesh.position.y = -0.197;
+        shadowPlaneMesh.receiveShadow = true;
+        this.scene.add(shadowPlaneMesh);
+
+        // Debug
+        if(this.debug.active)
+        {
+            this.floorDebugFolder.add(this.params, 'shadowOpacity')
+                .min(0).max(1).step(0.01).name('shadowOpacity').onChange(() =>
+                {
+                    shadowPlaneMat.opacity = this.params.shadowOpacity
+                    // console.log(this.shadowPlaneMat)
+                })
+        }
+    }
+    
+    setPodium()
+    {
+        this.debugObject.podiumEdgeColor = '#707070'
+        this.debugObject.podiumRingColor = '#ffffff'
+        this.debugObject.podiumCentreColor = '#f0f0f0'
+
+        const podiumGeo = new THREE.CylinderGeometry(0.25, 0.25, 0.01, 64, 64);
+        const podiumMat = new THREE.MeshStandardMaterial({
+            color: this.debugObject.podiumEdgeColor
+        })
+        const podiumMesh = new THREE.Mesh(podiumGeo, podiumMat);
+        podiumMesh.position.y = -0.19;
+        this.scene.add(podiumMesh);
+
+        const podiumTopGeo = new THREE.PlaneGeometry(1, 1, 1, 1)
+        const podiumTopMat = new THREE.ShaderMaterial({
+            transparent: true,
+            side: THREE.FrontSide,
+            vertexShader: podiumVert,
+            fragmentShader: podiumFrag,
+            uniforms:
+            {
+                uRingColor: { value: new THREE.Color(this.debugObject.podiumRingColor) },
+                uCentreColor: { value: new THREE.Color(this.debugObject.podiumCentreColor) },
+                uRadius: { value: 0.25 },
+                uRingThickness: { value: 0.02 },
+            }
+        });
+        const podiumTopMesh = new THREE.Mesh(podiumTopGeo, podiumTopMat)
+        podiumTopMesh.rotation.x = Math.PI * -0.5;
+        podiumTopMesh.position.y = -0.18;
+        this.scene.add(podiumTopMesh);
+
+        // Debug
+        if(this.debug.active)
+        {
+            this.podiumDebugFolder.addColor(this.debugObject, 'podiumEdgeColor').name('podiumEdgeColor').onChange(() =>
+            {
+                (podiumMat.color.set(this.debugObject.podiumEdgeColor))
+            })
+            this.podiumDebugFolder.addColor(this.debugObject, 'podiumRingColor').name('podiumRingColor').onChange(() =>
+            {
+                (podiumTopMat.uniforms.uRingColor.value.set(this.debugObject.podiumRingColor))
+            })
+            this.podiumDebugFolder.addColor(this.debugObject, 'podiumCentreColor').name('podiumCentreColor').onChange(() =>
+            {
+                (podiumTopMat.uniforms.uCentreColor.value.set(this.debugObject.podiumCentreColor))
+            })
+            this.podiumDebugFolder.add(podiumTopMat.uniforms.uRadius, 'value')
+                .min(0).max(1).step(0.001).name('podiumRadius')
+            this.podiumDebugFolder.add(podiumTopMat.uniforms.uRingThickness, 'value')
+                .min(0).max(0.2).step(0.001).name('podiumRingThickness')
+        }
     }
 
     setBackground()
     {
-        this.debugObject.backgroundColor1 = '#f0ffff'
-        this.debugObject.backgroundColor2 = '#fffaff'
+        this.debugObject.backgroundColor1 = '#dbdbdb'
+        this.debugObject.backgroundColor2 = '#dbdbdb'
         const backgroundGeo = new THREE.SphereGeometry(20, 32, 32)
         const backgroundMat = new THREE.ShaderMaterial({
             side: THREE.BackSide,
@@ -127,17 +229,17 @@ export default class Object
         // Debug
         if(this.debug.active)
         {
-            this.debugFolder.addColor(this.debugObject, 'backgroundColor1').name('backgroundColor1').onChange(() =>
+            this.backgroundDebugFolder.addColor(this.debugObject, 'backgroundColor1').name('backgroundColor1').onChange(() =>
             {
                 (backgroundMat.uniforms.uColor1.value.set(this.debugObject.backgroundColor1))
             })
-            this.debugFolder.addColor(this.debugObject, 'backgroundColor2').name('backgroundColor2').onChange(() =>
+            this.backgroundDebugFolder.addColor(this.debugObject, 'backgroundColor2').name('backgroundColor2').onChange(() =>
             {
                 (backgroundMat.uniforms.uColor2.value.set(this.debugObject.backgroundColor2))
             })
-            this.debugFolder.add(backgroundMat.uniforms.uGradientRange, 'value')
+            this.backgroundDebugFolder.add(backgroundMat.uniforms.uGradientRange, 'value')
                 .min(0).max(10).step(0.1).name('gradientRange')
-            this.debugFolder.add(backgroundMat.uniforms.uGradientOffset, 'value')
+            this.backgroundDebugFolder.add(backgroundMat.uniforms.uGradientOffset, 'value')
                 .min(-10).max(10).step(0.1).name('gradientOffset')
         }
     }
@@ -148,10 +250,11 @@ export default class Object
 
         const character = characterResource.scene
         character.scale.set(0.2, 0.2, 0.2)
-        character.position.y = -0.2
+        character.position.y = -0.18
         character.rotation.y = Math.PI
         this.scene.add(character)
         this.loading.character = character
+        // character.visible = false
 
         character.traverse((child) =>
         {

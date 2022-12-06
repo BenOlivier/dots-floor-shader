@@ -29,7 +29,7 @@ export default class Loading
 
         // Parameters
         this.params = {
-            loadingDuration: 2.5,
+            loadingDuration: 0.1,
             previewFadeTime: 0.8,
             barLength: 0.5,
             barAnimationDuration: 1,
@@ -39,7 +39,7 @@ export default class Loading
         if(this.debug.active)
         {
             this.debugFolder = this.debug.ui.addFolder('loading')
-            // this.debugFolder.close()
+            this.debugFolder.close()
 
             const debugObject = {
                 Load_Character: () => {
