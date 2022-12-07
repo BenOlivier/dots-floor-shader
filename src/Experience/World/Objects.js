@@ -160,6 +160,7 @@ export default class Object
         this.params.podiumRadius = 0.22;
         this.params.podiumPulseAmplitude = 0.02;
         this.params.podiumPulseFrequency = 2;
+        
 
         const podiumGeo = new THREE.PlaneGeometry(1, 1, 1, 1);
         this.podiumMat = new THREE.ShaderMaterial({
