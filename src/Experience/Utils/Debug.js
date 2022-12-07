@@ -11,6 +11,8 @@ export default class Debug
             this.ui = new dat.GUI({
                 width: 300
             })
+
+            this.ui.close();
         }
     }
 }

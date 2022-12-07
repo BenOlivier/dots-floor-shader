@@ -30,7 +30,7 @@ export default class Object
             this.dotsDebugFolder.close()
             this.backgroundDebugFolder.close()
             this.floorDebugFolder.close()
-            // this.podiumFolder.close()
+            this.podiumDebugFolder.close()
         }
 
         this.params = {
@@ -39,7 +39,7 @@ export default class Object
 
         this.setBackground()
         this.setFloor()
-        this.setDots()
+        // this.setDots()
         this.setPodium()
         this.setShadowPlane()
         this.setCharacter()
@@ -88,6 +88,7 @@ export default class Object
     setFloor()
     {
         this.debugObject.floorColor = '#ffffff'
+        this.debugObject.dotsColor = '#dbdbdb'
         
         const floorGeo = new THREE.PlaneGeometry(10, 10, 1, 1)
         const floorMat = new THREE.ShaderMaterial({
@@ -98,8 +99,12 @@ export default class Object
             uniforms:
             {
                 uFloorColor: { value: new THREE.Color(this.debugObject.floorColor) },
-                uAreaRadius: { value: 2 },
-                uAreaPower: { value: 0.5 },
+                uFloorRadius: { value: 2 },
+                uFloorPower: { value: 0.5 },
+
+                uDotsColor: { value: new THREE.Color(this.debugObject.dotsColor) },
+                uGridScale: { value: 301 },
+                uDotRadius: { value: 0.08 },
             }
         });
         const floorMesh = new THREE.Mesh(floorGeo, floorMat)
@@ -110,56 +115,25 @@ export default class Object
         // Debug
         if(this.debug.active)
         {
+            // Floor
             this.floorDebugFolder.addColor(this.debugObject, 'floorColor').name('floorColor').onChange(() =>
             {
                 (floorMat.uniforms.uFloorColor.value.set(this.debugObject.floorColor))
             })
-            this.floorDebugFolder.add(floorMat.uniforms.uAreaRadius, 'value')
-                .min(0).max(10).step(0.01).name('areaRadius')
-            this.floorDebugFolder.add(floorMat.uniforms.uAreaPower, 'value')
-                .min(0).max(10).step(0.01).name('areaPower')
-        }
-    }
+            this.floorDebugFolder.add(floorMat.uniforms.uFloorRadius, 'value')
+                .min(0).max(10).step(0.01).name('floorRadius')
+            this.floorDebugFolder.add(floorMat.uniforms.uFloorPower, 'value')
+                .min(0).max(10).step(0.01).name('floorPower')
 
-    setDots()
-    {
-        this.debugObject.dotsColor = '#dbdbdb'
-        
-        const dotsGeo = new THREE.PlaneGeometry(10, 10, 1, 1)
-        const dotsMat = new THREE.ShaderMaterial({
-            transparent: true,
-            side: THREE.FrontSide,
-            vertexShader: dotsVert,
-            fragmentShader: dotsFrag,
-            uniforms:
-            {
-                uDotsColor: { value: new THREE.Color(this.debugObject.dotsColor) },
-                uGridScale: { value: 301 },
-                uDotRadius: { value: 0.08 },
-                uAreaRadius: { value: 1 },
-                uAreaPower: { value: 0.5 },
-            }
-        });
-        const dotsMesh = new THREE.Mesh(dotsGeo, dotsMat)
-        dotsMesh.rotation.x = Math.PI * -0.5;
-        dotsMesh.position.y = -0.2;
-        this.scene.add(dotsMesh);
-
-        // Debug
-        if(this.debug.active)
-        {
+            // Dots
             this.dotsDebugFolder.addColor(this.debugObject, 'dotsColor').name('dotsColor').onChange(() =>
             {
-                (dotsMat.uniforms.uDotsColor.value.set(this.debugObject.dotsColor))
+                (floorMat.uniforms.uDotsColor.value.set(this.debugObject.dotsColor))
             })
-            this.dotsDebugFolder.add(dotsMat.uniforms.uGridScale, 'value')
-                .min(1).max(500).step(1).name('gridScale')
-            this.dotsDebugFolder.add(dotsMat.uniforms.uDotRadius, 'value')
+            this.dotsDebugFolder.add(floorMat.uniforms.uDotRadius, 'value')
                 .min(0).max(0.5).step(0.001).name('dotRadius')
-            this.dotsDebugFolder.add(dotsMat.uniforms.uAreaRadius, 'value')
-                .min(0).max(10).step(0.01).name('areaRadius')
-            this.dotsDebugFolder.add(dotsMat.uniforms.uAreaPower, 'value')
-                .min(0).max(10).step(0.01).name('areaPower')
+            this.dotsDebugFolder.add(floorMat.uniforms.uGridScale, 'value')
+                .min(1).max(500).step(1).name('gridScale')
         }
     }
 
