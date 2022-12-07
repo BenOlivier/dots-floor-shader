@@ -18,20 +18,19 @@ export default class Object
         this.debug = this.experience.debug;
         this.time = this.experience.time;
         this.loading = this.experience.loading;
+        this.renderer = this.experience.renderer;
 
         if(this.debug.active)
         {
             this.dotsDebugFolder = this.debug.ui.addFolder('dots');
-            this.backgroundDebugFolder = this.debug.ui.addFolder('background');
             this.floorDebugFolder = this.debug.ui.addFolder('floor');
             this.podiumDebugFolder = this.debug.ui.addFolder('podium');
             this.dotsDebugFolder.close();
-            this.backgroundDebugFolder.close();
             this.floorDebugFolder.close();
             this.podiumDebugFolder.close();
         }
 
-        this.debugObject = {
+        this.params = {
             Podium_Animation: () => {
                 this.podiumAnimation();
             },
@@ -43,15 +42,11 @@ export default class Object
             },
         };
 
-        this.debug.ui.add(this.debugObject, 'Light_Mode');
-        this.debug.ui.add(this.debugObject, 'Dark_Mode');
-        this.podiumDebugFolder.add(this.debugObject, 'Podium_Animation');
+        this.debug.ui.add(this.params, 'Light_Mode');
+        this.debug.ui.add(this.params, 'Dark_Mode');
+        this.podiumDebugFolder.add(this.params, 'Podium_Animation');
 
-        this.params = {
-            shadowOpacity: 0.05,
-        };
-
-        this.setBackground();
+        // this.setBackground();
         this.setFloor();
         this.setPodium();
         this.setShadowPlane();
@@ -61,7 +56,7 @@ export default class Object
 
     setBackground()
     {
-        this.params.backgroundColorLight = '#dddfe4';
+        this.params.backgroundColorLight = '#e5e7eb';
         this.params.backgroundColorDark = '#1b1c1d';
 
         const backgroundGeo = new THREE.SphereGeometry(20, 32, 32);
@@ -219,6 +214,8 @@ export default class Object
 
     setShadowPlane()
     {
+        this.params.shadowOpacity = 0.05;
+        
         const shadowPlaneGeo = new THREE.PlaneGeometry(2, 2, 1, 1);
         const shadowPlaneMat = new THREE.ShadowMaterial({
             color: '#000000',
@@ -294,8 +291,7 @@ export default class Object
 
     enterLightMode()
     {
-        this.backgroundMat.uniforms.uColor1.value.set(this.params.backgroundColorLight);
-        this.backgroundMat.uniforms.uColor2.value.set(this.params.backgroundColorLight);
+        this.renderer.renderer.setClearColor(this.renderer.params.backgroundColorLight);
         this.floorMat.uniforms.uFloorColor.value.set(this.params.floorColorLight);
         this.floorMat.uniforms.uDotsColor.value.set(this.params.dotsColorLight);
         this.podiumMat.uniforms.uRingColor.value.set(this.params.podiumRingColorLight);
@@ -304,8 +300,7 @@ export default class Object
 
     enterDarkMode()
     {
-        this.backgroundMat.uniforms.uColor1.value.set(this.params.backgroundColorDark);
-        this.backgroundMat.uniforms.uColor2.value.set(this.params.backgroundColorDark);
+        this.renderer.renderer.setClearColor(this.renderer.params.backgroundColorDark);
         this.floorMat.uniforms.uFloorColor.value.set(this.params.floorColorDark);
         this.floorMat.uniforms.uDotsColor.value.set(this.params.dotsColorDark);
         this.podiumMat.uniforms.uRingColor.value.set(this.params.podiumRingColorDark);

@@ -12,6 +12,17 @@ export default class Renderer
         this.camera = this.experience.camera
         this.debug = this.experience.debug
 
+        if(this.debug.active)
+        {
+            this.backgroundDebugFolder = this.debug.ui.addFolder('background');
+            this.backgroundDebugFolder.close();
+        }
+
+        this.params = {
+            backgroundColorLight: '#e5e7eb',
+            backgroundColorDark: '#1b1c1d',
+        }
+
         this.setRenderer()
     }
 
@@ -23,6 +34,7 @@ export default class Renderer
             alpha: true,
         })
         this.renderer.sortObjects = false;
+        this.renderer.setClearColor(this.params.backgroundColorLight);
         this.renderer.physicallyCorrectLights = true
         this.renderer.outputEncoding = THREE.sRGBEncoding
         this.renderer.toneMapping = THREE.NoToneMapping
@@ -31,6 +43,15 @@ export default class Renderer
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
         this.renderer.setSize(this.sizes.width, this.sizes.height)
         this.renderer.setPixelRatio(Math.min(this.sizes.pixelRatio, 2))
+
+        // Debug
+        if(this.debug.active)
+        {
+            this.backgroundDebugFolder.addColor(this.params, 'backgroundColorLight').name('backgroundColor').onChange(() =>
+            {
+                (this.renderer.setClearColor(this.params.backgroundColorLight));
+            });
+        }
     }
 
     resize()
