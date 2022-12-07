@@ -37,13 +37,52 @@ export default class Object
             shadowOpacity: 0.1,
         }
 
+        this.setBackground()
         this.setFloor()
         this.setDots()
-        this.setShadowPlane()
         this.setPodium()
-        this.setBackground()
+        this.setShadowPlane()
         this.setCharacter()
         this.setCap()
+    }
+
+    setBackground()
+    {
+        this.debugObject.backgroundColor1 = '#dddfe4'
+        this.debugObject.backgroundColor2 = '#dddfe4'
+        const backgroundGeo = new THREE.SphereGeometry(20, 32, 32)
+        const backgroundMat = new THREE.ShaderMaterial({
+            side: THREE.BackSide,
+            vertexShader: backgroundVert,
+            fragmentShader: backgroundFrag,
+            uniforms:
+            {
+                uColor1: { value: new THREE.Color(this.debugObject.backgroundColor1) },
+                uColor2: { value: new THREE.Color(this.debugObject.backgroundColor2) },
+                uGradientRange: { value: 1 },
+                uGradientOffset: { value: -0.3 },
+            }
+        })
+        const backgroundMesh = new THREE.Mesh(backgroundGeo, backgroundMat)
+        backgroundMesh.rotation.z = Math.PI * 0.5
+        this.scene.add(backgroundMesh)
+
+        // Debug
+        if(this.debug.active)
+        {
+            this.backgroundDebugFolder.addColor(this.debugObject, 'backgroundColor1').name('backgroundColor1').onChange(() =>
+            {
+                (backgroundMat.uniforms.uColor1.value.set(this.debugObject.backgroundColor1))
+            })
+            this.backgroundDebugFolder.addColor(this.debugObject, 'backgroundColor2').name('backgroundColor2').onChange(() =>
+            {
+                (backgroundMat.uniforms.uColor2.value.set(this.debugObject.backgroundColor2))
+            })
+            this.backgroundDebugFolder.add(backgroundMat.uniforms.uGradientRange, 'value')
+                .min(0).max(10).step(0.1).name('gradientRange')
+            this.backgroundDebugFolder.add(backgroundMat.uniforms.uGradientOffset, 'value')
+                .min(-10).max(10).step(0.1).name('gradientOffset')
+        }
     }
 
     setFloor()
@@ -124,32 +163,6 @@ export default class Object
         }
     }
 
-    setShadowPlane()
-    {
-        const shadowPlaneGeo = new THREE.PlaneGeometry(2, 2, 1, 1)
-        const shadowPlaneMat = new THREE.ShadowMaterial({
-            color: '#000000',
-            opacity: this.params.shadowOpacity,
-            transparent: true
-        });
-        const shadowPlaneMesh = new THREE.Mesh(shadowPlaneGeo, shadowPlaneMat)
-        shadowPlaneMesh.rotation.x = Math.PI * -0.5;
-        shadowPlaneMesh.position.y = -0.197;
-        shadowPlaneMesh.receiveShadow = true;
-        this.scene.add(shadowPlaneMesh);
-
-        // Debug
-        if(this.debug.active)
-        {
-            this.floorDebugFolder.add(this.params, 'shadowOpacity')
-                .min(0).max(1).step(0.01).name('shadowOpacity').onChange(() =>
-                {
-                    shadowPlaneMat.opacity = this.params.shadowOpacity
-                    // console.log(this.shadowPlaneMat)
-                })
-        }
-    }
-    
     setPodium()
     {
         this.debugObject.podiumRingColor = '#ffffff'
@@ -195,42 +208,29 @@ export default class Object
         }
     }
 
-    setBackground()
+    setShadowPlane()
     {
-        this.debugObject.backgroundColor1 = '#dbdbdb'
-        this.debugObject.backgroundColor2 = '#dbdbdb'
-        const backgroundGeo = new THREE.SphereGeometry(20, 32, 32)
-        const backgroundMat = new THREE.ShaderMaterial({
-            side: THREE.BackSide,
-            vertexShader: backgroundVert,
-            fragmentShader: backgroundFrag,
-            uniforms:
-            {
-                uColor1: { value: new THREE.Color(this.debugObject.backgroundColor1) },
-                uColor2: { value: new THREE.Color(this.debugObject.backgroundColor2) },
-                uGradientRange: { value: 1 },
-                uGradientOffset: { value: -0.3 },
-            }
-        })
-        const backgroundMesh = new THREE.Mesh(backgroundGeo, backgroundMat)
-        backgroundMesh.rotation.z = Math.PI * 0.5
-        this.scene.add(backgroundMesh)
+        const shadowPlaneGeo = new THREE.PlaneGeometry(2, 2, 1, 1)
+        const shadowPlaneMat = new THREE.ShadowMaterial({
+            color: '#000000',
+            opacity: this.params.shadowOpacity,
+            transparent: true
+        });
+        const shadowPlaneMesh = new THREE.Mesh(shadowPlaneGeo, shadowPlaneMat)
+        shadowPlaneMesh.rotation.x = Math.PI * -0.5;
+        shadowPlaneMesh.position.y = -0.197;
+        shadowPlaneMesh.receiveShadow = true;
+        this.scene.add(shadowPlaneMesh);
 
         // Debug
         if(this.debug.active)
         {
-            this.backgroundDebugFolder.addColor(this.debugObject, 'backgroundColor1').name('backgroundColor1').onChange(() =>
-            {
-                (backgroundMat.uniforms.uColor1.value.set(this.debugObject.backgroundColor1))
-            })
-            this.backgroundDebugFolder.addColor(this.debugObject, 'backgroundColor2').name('backgroundColor2').onChange(() =>
-            {
-                (backgroundMat.uniforms.uColor2.value.set(this.debugObject.backgroundColor2))
-            })
-            this.backgroundDebugFolder.add(backgroundMat.uniforms.uGradientRange, 'value')
-                .min(0).max(10).step(0.1).name('gradientRange')
-            this.backgroundDebugFolder.add(backgroundMat.uniforms.uGradientOffset, 'value')
-                .min(-10).max(10).step(0.1).name('gradientOffset')
+            this.floorDebugFolder.add(this.params, 'shadowOpacity')
+                .min(0).max(1).step(0.01).name('shadowOpacity').onChange(() =>
+                {
+                    shadowPlaneMat.opacity = this.params.shadowOpacity
+                    // console.log(this.shadowPlaneMat)
+                })
         }
     }
 
