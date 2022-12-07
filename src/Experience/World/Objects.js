@@ -27,21 +27,28 @@ export default class Object
             this.podiumDebugFolder = this.debug.ui.addFolder('podium');
             this.dotsDebugFolder.close();
             this.backgroundDebugFolder.close();
-            // this.floorDebugFolder.close();
+            this.floorDebugFolder.close();
             this.podiumDebugFolder.close();
         }
 
         this.debugObject = {
             Podium_Animation: () => {
-                this.podiumAnimation()
-            }
+                this.podiumAnimation();
+            },
+            Light_Mode: () => {
+                this.enterLightMode();
+            },
+            Dark_Mode: () => {
+                this.enterDarkMode();
+            },
         };
 
+        this.debug.ui.add(this.debugObject, 'Light_Mode');
+        this.debug.ui.add(this.debugObject, 'Dark_Mode');
         this.podiumDebugFolder.add(this.debugObject, 'Podium_Animation');
 
         this.params = {
             shadowOpacity: 0.05,
-            podiumRadius: 0.22,
         };
 
         this.setBackground();
@@ -54,66 +61,69 @@ export default class Object
 
     setBackground()
     {
-        this.debugObject.backgroundColorTop = '#dddfe4';
-        this.debugObject.backgroundColorBottom = '#dddfe4';
+        this.params.backgroundColorLight = '#dddfe4';
+        this.params.backgroundColorDark = '#1b1c1d';
+
         const backgroundGeo = new THREE.SphereGeometry(20, 32, 32);
-        const backgroundMat = new THREE.ShaderMaterial({
+        this.backgroundMat = new THREE.ShaderMaterial({
             side: THREE.BackSide,
             vertexShader: backgroundVert,
             fragmentShader: backgroundFrag,
             uniforms:
             {
-                uColor1: { value: new THREE.Color(this.debugObject.backgroundColorTop) },
-                uColor2: { value: new THREE.Color(this.debugObject.backgroundColorBottom) },
+                uColor1: { value: new THREE.Color(this.params.backgroundColorLight) },
+                uColor2: { value: new THREE.Color(this.params.backgroundColorLight) },
                 uGradientRange: { value: 2 },
                 uGradientOffset: { value: 0 },
             },
         });
-        const backgroundMesh = new THREE.Mesh(backgroundGeo, backgroundMat);
-        // backgroundMesh.rotation.z = Math.PI * 0.5;
+        const backgroundMesh = new THREE.Mesh(backgroundGeo, this.backgroundMat);
         this.scene.add(backgroundMesh);
 
         // Debug
         if(this.debug.active)
         {
-            this.backgroundDebugFolder.addColor(this.debugObject, 'backgroundColorTop').name('backgroundColorTop').onChange(() =>
+            this.backgroundDebugFolder.addColor(this.params, 'backgroundColorLight').name('backgroundColorTop').onChange(() =>
             {
-                (backgroundMat.uniforms.uColor1.value.set(this.debugObject.backgroundColorTop));
+                (this.backgroundMat.uniforms.uColor1.value.set(this.params.backgroundColorLight));
             });
-            this.backgroundDebugFolder.addColor(this.debugObject, 'backgroundColorBottom').name('backgroundColorBottom').onChange(() =>
+            this.backgroundDebugFolder.addColor(this.params, 'backgroundColorLight').name('backgroundColorBottom').onChange(() =>
             {
-                (backgroundMat.uniforms.uColor2.value.set(this.debugObject.backgroundColorBottom));
+                (this.backgroundMat.uniforms.uColor2.value.set(this.params.backgroundColorLight));
             });
-            this.backgroundDebugFolder.add(backgroundMat.uniforms.uGradientRange, 'value')
+            this.backgroundDebugFolder.add(this.backgroundMat.uniforms.uGradientRange, 'value')
                 .min(0).max(10).step(0.1).name('gradientRange');
-            this.backgroundDebugFolder.add(backgroundMat.uniforms.uGradientOffset, 'value')
+            this.backgroundDebugFolder.add(this.backgroundMat.uniforms.uGradientOffset, 'value')
                 .min(-5).max(5).step(0.1).name('gradientOffset');
         };
     }
 
     setFloor()
     {
-        this.debugObject.floorColor = '#ffffff';
-        this.debugObject.dotsColor = '#dddfe4';
+        this.params.dotsColorLight = '#dddfe4';
+        this.params.dotsColorDark = '#333333';
+
+        this.params.floorColorLight = '#ffffff';
+        this.params.floorColorDark = '#212121';
         
         const floorGeo = new THREE.PlaneGeometry(10, 10, 1, 1);
-        const floorMat = new THREE.ShaderMaterial({
+        this.floorMat = new THREE.ShaderMaterial({
             transparent: true,
             vertexShader: floorVert,
             fragmentShader: floorFrag,
             uniforms:
             {
-                uFloorColor: { value: new THREE.Color(this.debugObject.floorColor) },
+                uFloorColor: { value: new THREE.Color(this.params.floorColorLight) },
                 uFloorRadius: { value: 0.2 },
                 uFloorPower: { value: 1 },
                 uFresnelPower: { value: 20 },
 
-                uDotsColor: { value: new THREE.Color(this.debugObject.dotsColor) },
+                uDotsColor: { value: new THREE.Color(this.params.dotsColorLight) },
                 uGridScale: { value: 301 },
                 uDotRadius: { value: 0.08 },
             },
         });
-        const floorMesh = new THREE.Mesh(floorGeo, floorMat);
+        const floorMesh = new THREE.Mesh(floorGeo, this.floorMat);
         floorMesh.rotation.x = Math.PI * -0.5;
         floorMesh.position.y = -0.2;
         floorMesh.renderOrder = 1;
@@ -123,33 +133,36 @@ export default class Object
         if(this.debug.active)
         {
             // Floor
-            this.floorDebugFolder.addColor(this.debugObject, 'floorColor').name('floorColor').onChange(() =>
+            this.floorDebugFolder.addColor(this.params, 'floorColorLight').name('floorColor').onChange(() =>
             {
-                (floorMat.uniforms.uFloorColor.value.set(this.debugObject.floorColor));
+                (this.floorMat.uniforms.uFloorColor.value.set(this.params.floorColorLight));
             });
-            this.floorDebugFolder.add(floorMat.uniforms.uFloorRadius, 'value')
+            this.floorDebugFolder.add(this.floorMat.uniforms.uFloorRadius, 'value')
                 .min(0).max(0.5).step(0.01).name('floorRadius');
-            this.floorDebugFolder.add(floorMat.uniforms.uFloorPower, 'value')
+            this.floorDebugFolder.add(this.floorMat.uniforms.uFloorPower, 'value')
                 .min(0).max(10).step(0.01).name('floorPower');
-            this.floorDebugFolder.add(floorMat.uniforms.uFresnelPower, 'value')
+            this.floorDebugFolder.add(this.floorMat.uniforms.uFresnelPower, 'value')
                 .min(0).max(100).step(0.01).name('fresnelPower');
 
             // Dots
-            this.dotsDebugFolder.addColor(this.debugObject, 'dotsColor').name('dotsColor').onChange(() =>
+            this.dotsDebugFolder.addColor(this.params, 'dotsColorLight').name('dotsColor').onChange(() =>
             {
-                (floorMat.uniforms.uDotsColor.value.set(this.debugObject.dotsColor));
+                (this.floorMat.uniforms.uDotsColor.value.set(this.params.dotsColorLight));
             });
-            this.dotsDebugFolder.add(floorMat.uniforms.uDotRadius, 'value')
+            this.dotsDebugFolder.add(this.floorMat.uniforms.uDotRadius, 'value')
                 .min(0).max(0.5).step(0.001).name('dotRadius');
-            this.dotsDebugFolder.add(floorMat.uniforms.uGridScale, 'value')
+            this.dotsDebugFolder.add(this.floorMat.uniforms.uGridScale, 'value')
                 .min(1).max(500).step(1).name('gridScale');
         };
     }
 
     setPodium()
     {
-        this.debugObject.podiumRingColor = '#ffffff';
-        this.debugObject.podiumCentreColor = '#fafafa';
+        this.params.podiumRingColorLight = '#ffffff';
+        this.params.podiumRingColorDark = '#292929';
+        this.params.podiumCentreColorLight = '#fafafa';
+        this.params.podiumCentreColorDark = '#292929';
+        this.params.podiumRadius = 0.22;
 
         const podiumGeo = new THREE.PlaneGeometry(1, 1, 1, 1);
         this.podiumMat = new THREE.ShaderMaterial({
@@ -158,8 +171,8 @@ export default class Object
             fragmentShader: podiumFrag,
             uniforms:
             {
-                uRingColor: { value: new THREE.Color(this.debugObject.podiumRingColor) },
-                uCentreColor: { value: new THREE.Color(this.debugObject.podiumCentreColor) },
+                uRingColor: { value: new THREE.Color(this.params.podiumRingColorLight) },
+                uCentreColor: { value: new THREE.Color(this.params.podiumCentreColorLight) },
                 uRadius: { value: 0 },
                 uRingThickness: { value: 0.01 },
                 uCentreOpacity: { value: 0.4 },
@@ -173,13 +186,13 @@ export default class Object
         // Debug
         if(this.debug.active)
         {
-            this.podiumDebugFolder.addColor(this.debugObject, 'podiumRingColor').name('podiumRingColor').onChange(() =>
+            this.podiumDebugFolder.addColor(this.params, 'podiumRingColorLight').name('podiumRingColor').onChange(() =>
             {
-                this.podiumMat.uniforms.uRingColor.value.set(this.debugObject.podiumRingColor);
+                this.podiumMat.uniforms.uRingColor.value.set(this.params.podiumRingColorLight);
             });
-            this.podiumDebugFolder.addColor(this.debugObject, 'podiumCentreColor').name('podiumCentreColor').onChange(() =>
+            this.podiumDebugFolder.addColor(this.params, 'podiumCentreColorLight').name('podiumCentreColor').onChange(() =>
             {
-                this.podiumMat.uniforms.uCentreColor.value.set(this.debugObject.podiumCentreColor);
+                this.podiumMat.uniforms.uCentreColor.value.set(this.params.podiumCentreColorLight);
             });
             this.podiumDebugFolder.add(this.params, 'podiumRadius').min(0).max(1).step(0.001).name('podiumRadius').onChange(() =>
             {
@@ -277,6 +290,26 @@ export default class Object
                 child.castShadow = true;
             }
         });
+    }
+
+    enterLightMode()
+    {
+        this.backgroundMat.uniforms.uColor1.value.set(this.params.backgroundColorLight);
+        this.backgroundMat.uniforms.uColor2.value.set(this.params.backgroundColorLight);
+        this.floorMat.uniforms.uFloorColor.value.set(this.params.floorColorLight);
+        this.floorMat.uniforms.uDotsColor.value.set(this.params.dotsColorLight);
+        this.podiumMat.uniforms.uRingColor.value.set(this.params.podiumRingColorLight);
+        this.podiumMat.uniforms.uCentreColor.value.set(this.params.podiumCentreColorLight);
+    }
+
+    enterDarkMode()
+    {
+        this.backgroundMat.uniforms.uColor1.value.set(this.params.backgroundColorDark);
+        this.backgroundMat.uniforms.uColor2.value.set(this.params.backgroundColorDark);
+        this.floorMat.uniforms.uFloorColor.value.set(this.params.floorColorDark);
+        this.floorMat.uniforms.uDotsColor.value.set(this.params.dotsColorDark);
+        this.podiumMat.uniforms.uRingColor.value.set(this.params.podiumRingColorDark);
+        this.podiumMat.uniforms.uCentreColor.value.set(this.params.podiumCentreColorDark);
     }
 
     update()
