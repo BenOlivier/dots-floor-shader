@@ -20,8 +20,9 @@ export default class Renderer
         this.renderer = new THREE.WebGLRenderer({
             canvas: this.canvas,
             antialias: true,
-            alpha: true
+            alpha: true,
         })
+        this.renderer.sortObjects = false;
         this.renderer.physicallyCorrectLights = true
         this.renderer.outputEncoding = THREE.sRGBEncoding
         this.renderer.toneMapping = THREE.NoToneMapping

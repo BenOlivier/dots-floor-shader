@@ -39,8 +39,7 @@ export default class Object
 
         this.setBackground()
         this.setFloor()
-        // this.setDots()
-        this.setPodium()
+        // this.setPodium()
         this.setShadowPlane()
         this.setCharacter()
         this.setCap()
@@ -93,7 +92,6 @@ export default class Object
         const floorGeo = new THREE.PlaneGeometry(10, 10, 1, 1)
         const floorMat = new THREE.ShaderMaterial({
             transparent: true,
-            side: THREE.FrontSide,
             vertexShader: floorVert,
             fragmentShader: floorFrag,
             uniforms:
@@ -110,6 +108,7 @@ export default class Object
         const floorMesh = new THREE.Mesh(floorGeo, floorMat)
         floorMesh.rotation.x = Math.PI * -0.5;
         floorMesh.position.y = -0.2;
+        floorMesh.renderOrder = 1;
         this.scene.add(floorMesh);
 
         // Debug
@@ -145,7 +144,7 @@ export default class Object
         const podiumGeo = new THREE.PlaneGeometry(1, 1, 1, 1)
         const podiumMat = new THREE.ShaderMaterial({
             transparent: true,
-            side: THREE.FrontSide,
+            // depthWrite: false,
             vertexShader: podiumVert,
             fragmentShader: podiumFrag,
             uniforms:
@@ -216,6 +215,7 @@ export default class Object
         character.scale.set(0.2, 0.2, 0.2)
         character.position.y = -0.2
         character.rotation.y = Math.PI
+
         this.scene.add(character)
         this.loading.character = character
         // character.visible = false
@@ -224,6 +224,7 @@ export default class Object
         {
             if(child instanceof THREE.Mesh)
             {
+                child.renderOrder = 2;
                 child.castShadow = true
             }
         })
