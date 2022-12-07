@@ -97,7 +97,7 @@ export default class Object
                 uDotsColor: { value: new THREE.Color(this.debugObject.dotsColor) },
                 uGridScale: { value: 301 },
                 uDotRadius: { value: 0.08 },
-                uAreaRadius: { value: 2 },
+                uAreaRadius: { value: 1 },
                 uAreaPower: { value: 0.5 },
             }
         });
@@ -152,20 +152,11 @@ export default class Object
     
     setPodium()
     {
-        this.debugObject.podiumEdgeColor = '#707070'
         this.debugObject.podiumRingColor = '#ffffff'
-        this.debugObject.podiumCentreColor = '#f0f0f0'
+        this.debugObject.podiumCentreColor = '#ffffff'
 
-        const podiumGeo = new THREE.CylinderGeometry(0.25, 0.25, 0.01, 64, 64);
-        const podiumMat = new THREE.MeshStandardMaterial({
-            color: this.debugObject.podiumEdgeColor
-        })
-        const podiumMesh = new THREE.Mesh(podiumGeo, podiumMat);
-        podiumMesh.position.y = -0.19;
-        this.scene.add(podiumMesh);
-
-        const podiumTopGeo = new THREE.PlaneGeometry(1, 1, 1, 1)
-        const podiumTopMat = new THREE.ShaderMaterial({
+        const podiumGeo = new THREE.PlaneGeometry(1, 1, 1, 1)
+        const podiumMat = new THREE.ShaderMaterial({
             transparent: true,
             side: THREE.FrontSide,
             vertexShader: podiumVert,
@@ -174,34 +165,33 @@ export default class Object
             {
                 uRingColor: { value: new THREE.Color(this.debugObject.podiumRingColor) },
                 uCentreColor: { value: new THREE.Color(this.debugObject.podiumCentreColor) },
-                uRadius: { value: 0.25 },
-                uRingThickness: { value: 0.02 },
+                uRadius: { value: 0.22 },
+                uRingThickness: { value: 0.01 },
+                uCentreOpacity: { value: 0.5 },
             }
         });
-        const podiumTopMesh = new THREE.Mesh(podiumTopGeo, podiumTopMat)
-        podiumTopMesh.rotation.x = Math.PI * -0.5;
-        podiumTopMesh.position.y = -0.18;
-        this.scene.add(podiumTopMesh);
+        const podiumMesh = new THREE.Mesh(podiumGeo, podiumMat)
+        podiumMesh.rotation.x = Math.PI * -0.5;
+        podiumMesh.position.y = -0.199;
+        this.scene.add(podiumMesh);
 
         // Debug
         if(this.debug.active)
         {
-            this.podiumDebugFolder.addColor(this.debugObject, 'podiumEdgeColor').name('podiumEdgeColor').onChange(() =>
-            {
-                (podiumMat.color.set(this.debugObject.podiumEdgeColor))
-            })
             this.podiumDebugFolder.addColor(this.debugObject, 'podiumRingColor').name('podiumRingColor').onChange(() =>
             {
-                (podiumTopMat.uniforms.uRingColor.value.set(this.debugObject.podiumRingColor))
+                (podiumMat.uniforms.uRingColor.value.set(this.debugObject.podiumRingColor))
             })
             this.podiumDebugFolder.addColor(this.debugObject, 'podiumCentreColor').name('podiumCentreColor').onChange(() =>
             {
-                (podiumTopMat.uniforms.uCentreColor.value.set(this.debugObject.podiumCentreColor))
+                (podiumMat.uniforms.uCentreColor.value.set(this.debugObject.podiumCentreColor))
             })
-            this.podiumDebugFolder.add(podiumTopMat.uniforms.uRadius, 'value')
+            this.podiumDebugFolder.add(podiumMat.uniforms.uRadius, 'value')
                 .min(0).max(1).step(0.001).name('podiumRadius')
-            this.podiumDebugFolder.add(podiumTopMat.uniforms.uRingThickness, 'value')
-                .min(0).max(0.2).step(0.001).name('podiumRingThickness')
+                this.podiumDebugFolder.add(podiumMat.uniforms.uRingThickness, 'value')
+                .min(0).max(0.2).step(0.001).name('ringThickness')
+            this.podiumDebugFolder.add(podiumMat.uniforms.uCentreOpacity, 'value')
+                .min(0).max(1).step(0.001).name('centreOpacity')
         }
     }
 
@@ -250,7 +240,7 @@ export default class Object
 
         const character = characterResource.scene
         character.scale.set(0.2, 0.2, 0.2)
-        character.position.y = -0.18
+        character.position.y = -0.2
         character.rotation.y = Math.PI
         this.scene.add(character)
         this.loading.character = character

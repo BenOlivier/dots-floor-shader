@@ -4,6 +4,7 @@ uniform vec3 uRingColor;
 uniform vec3 uCentreColor;
 uniform float uRadius;
 uniform float uRingThickness;
+uniform float uCentreOpacity;
 
 void main()
 {
@@ -21,6 +22,10 @@ void main()
     vec3 centreColor = vec3(uCentreColor) * innerCircle;
     // Mix Color
     vec3 podiumColor = ringColor + centreColor;
+    // Centre alpha
+    float centreAlpha = innerCircle * uCentreOpacity;
+    // Calculate overall alpha
+    float podiumAlpha = outerCircle - centreAlpha;
 
-    gl_FragColor = vec4(podiumColor, outerCircle);
+    gl_FragColor = vec4(podiumColor, podiumAlpha);
 }
