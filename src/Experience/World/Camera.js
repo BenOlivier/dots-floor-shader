@@ -37,7 +37,7 @@ export default class Camera
         this.controls.minDistance = 0.2
         this.controls.maxDistance = 2
         // this.controls.minPolarAngle = Math.PI * 0.1
-        // this.controls.maxPolarAngle = Math.PI * 0.8
+        this.controls.maxPolarAngle = Math.PI * 0.7
     }
 
     animateCamera()

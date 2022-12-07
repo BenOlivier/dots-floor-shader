@@ -14,7 +14,7 @@ uniform float uGridScale;
 void main()
 {
     // Radial gradient
-    float radialGradient = 1.0 - pow(length(vUv - 0.5) * uFloorRadius, uFloorPower);
+    float radialGradient = 1.0 - pow(length((vUv - 0.5) / uFloorRadius), uFloorPower);
     
     // Value to offset every other row by 0.5
     float offsetrows = step(mod(vUv.y * (uGridScale * 0.5), 1.0), 0.5) * 0.5;

@@ -29,7 +29,7 @@ export default class Loading
 
         // Parameters
         this.params = {
-            loadingDuration: 0.1,
+            loadingDuration: 1,
             previewFadeTime: 0.8,
             barLength: 0.5,
             barAnimationDuration: 1,
@@ -74,9 +74,7 @@ export default class Loading
 
     setOverlay()
     {
-        this.resources = this.experience.resources
-        this.overlayImage = this.resources.items.deadpoolBlur
-        this.aspectRatio = this.sizes.width / this.sizes.height
+        this.debugObject.overlayColor = '#c8c8c8'
 
         this.overlayGeometry = new THREE.PlaneGeometry(2, 2, 1, 1)
         this.overlayMaterial = new THREE.ShaderMaterial({
@@ -84,9 +82,7 @@ export default class Loading
             uniforms:
             {
                 uAlpha: { value: 1 },
-                uTexture: { value: this.overlayImage },
-                uAspectRatio: { value: this.aspectRatio },
-                uImageScale: { value: 0.5 },
+                uColor: { value: new THREE.Color(this.debugObject.overlayColor) }
             },
             vertexShader: `
                 varying vec2 vUv;
@@ -96,12 +92,29 @@ export default class Loading
                     vUv = uv;
                 }
             `,
-            fragmentShader: overlayFrag
+            fragmentShader: `
+                uniform float uAlpha;
+                uniform vec3 uColor;
+                varying vec2 vUv;
+                
+                void main()
+                {
+                    gl_FragColor = vec4(uColor, uAlpha);
+                }
+            `,
         })
 
         this.overlay = new THREE.Mesh(this.overlayGeometry, this.overlayMaterial)
         this.overlay.renderOrder = 0
-        this.scene.add(this.overlay)
+        // this.scene.add(this.overlay)
+
+        if(this.debug.active)
+        {
+            this.debugFolder.addColor(this.debugObject, 'overlayColor').name('overlayColor').onChange(() =>
+            {
+                (this.overlayMaterial.uniforms.uColor.value.set(this.debugObject.overlayColor))
+            })
+        }
     }
 
     setLoadingBar()
@@ -116,6 +129,7 @@ export default class Loading
             this.loadingBarWidth, this.loadingBarHeight, 1, 1)
         this.loadingBarMaterial = new THREE.ShaderMaterial({
             transparent: true,
+
             uniforms:
             {
                 uBarColor: { value: new THREE.Color(this.debugObject.barColor) },
@@ -138,7 +152,7 @@ export default class Loading
         })
 
         this.loadingBar = new THREE.Mesh(this.loadingBarGeometry, this.loadingBarMaterial)
-        this.loadingBar.renderOrder = 999
+        this.loadingBar.renderOrder = 1
         this.scene.add(this.loadingBar)
 
         if(this.debug.active)
@@ -194,7 +208,9 @@ export default class Loading
             opacity: 0,
             duration: 0.3,
             delay: this.params.loadingDuration,
-            ease: 'linear'
+            ease: 'linear',
+            callbackScope: this,
+            onComplete: function() { this.experience.world.objects.podiumAnimation(0); }
         })
     }
 

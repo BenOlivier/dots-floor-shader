@@ -7,7 +7,7 @@ uniform float uGradientOffset;
 
 void main()
 {
-    vec3 gradient = mix(uColor1, uColor2, vUv.y * uGradientRange - uGradientOffset);
+    vec3 gradient = mix(uColor2, uColor1, (vUv.y - 0.5) * uGradientRange - uGradientOffset);
 
     gl_FragColor = vec4(gradient, 1.0);
 }
