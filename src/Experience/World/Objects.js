@@ -1,7 +1,5 @@
 import * as THREE from 'three'
 import Experience from '../Experience.js'
-import dotsVert from '../Shaders/dotsVert.glsl'
-import dotsFrag from '../Shaders/dotsFrag.glsl'
 import floorVert from '../Shaders/floorVert.glsl'
 import floorFrag from '../Shaders/floorFrag.glsl'
 import podiumVert from '../Shaders/podiumVert.glsl'
