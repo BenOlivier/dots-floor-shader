@@ -27,7 +27,7 @@ export default class Object
             this.podiumDebugFolder = this.debug.ui.addFolder('podium')
             this.dotsDebugFolder.close()
             this.backgroundDebugFolder.close()
-            this.floorDebugFolder.close()
+            // this.floorDebugFolder.close()
             this.podiumDebugFolder.close()
         }
 
@@ -97,6 +97,7 @@ export default class Object
                 uFloorColor: { value: new THREE.Color(this.debugObject.floorColor) },
                 uFloorRadius: { value: 2 },
                 uFloorPower: { value: 0.5 },
+                uFresnelPower: { value: 50 },
 
                 uDotsColor: { value: new THREE.Color(this.debugObject.dotsColor) },
                 uGridScale: { value: 301 },
@@ -121,6 +122,8 @@ export default class Object
                 .min(0).max(10).step(0.01).name('floorRadius')
             this.floorDebugFolder.add(floorMat.uniforms.uFloorPower, 'value')
                 .min(0).max(10).step(0.01).name('floorPower')
+            this.floorDebugFolder.add(floorMat.uniforms.uFresnelPower, 'value')
+                .min(0).max(100).step(0.01).name('fresnelPower')
 
             // Dots
             this.dotsDebugFolder.addColor(this.debugObject, 'dotsColor').name('dotsColor').onChange(() =>

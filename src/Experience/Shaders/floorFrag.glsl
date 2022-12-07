@@ -1,8 +1,11 @@
 varying vec2 vUv;
+varying vec3 vPositionW;
+varying vec3 vNormalW;
 // Floor
 uniform vec3 uFloorColor;
 uniform float uFloorRadius;
 uniform float uFloorPower;
+uniform float uFresnelPower;
 // Dots
 uniform vec3 uDotsColor;
 uniform float uDotRadius;
@@ -27,5 +30,9 @@ void main()
     // Combined color
     vec3 combinedColor = floorColor + dotsColor;
 
-    gl_FragColor = vec4(combinedColor, radialGradient);
+    // Fresnel value
+    float fresnelTerm = (1.0 - -min(dot(vPositionW, normalize(vNormalW)), 0.0));
+    fresnelTerm = clamp(1.0 - pow(fresnelTerm, uFresnelPower), 0.0, 1.0);
+
+    gl_FragColor = vec4(combinedColor, radialGradient * fresnelTerm);
 }
