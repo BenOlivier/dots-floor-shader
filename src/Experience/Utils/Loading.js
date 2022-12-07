@@ -210,7 +210,7 @@ export default class Loading
             delay: this.params.loadingDuration,
             ease: 'linear',
             callbackScope: this,
-            onComplete: function() { this.experience.world.objects.podiumAnimation(0); }
+            onComplete: function() { this.experience.world.objects.podiumOpenAnimation(0); }
         })
     }
 

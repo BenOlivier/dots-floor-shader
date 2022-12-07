@@ -32,7 +32,7 @@ export default class Object
 
         this.params = {
             Podium_Animation: () => {
-                this.podiumAnimation();
+                this.podiumOpenAnimation();
             },
             Light_Mode: () => {
                 this.enterLightMode();
@@ -158,6 +158,8 @@ export default class Object
         this.params.podiumCentreColorLight = '#fafafa';
         this.params.podiumCentreColorDark = '#292929';
         this.params.podiumRadius = 0.22;
+        this.params.podiumPulseAmplitude = 0.02;
+        this.params.podiumPulseFrequency = 2;
 
         const podiumGeo = new THREE.PlaneGeometry(1, 1, 1, 1);
         this.podiumMat = new THREE.ShaderMaterial({
@@ -197,10 +199,14 @@ export default class Object
                 .min(0).max(0.2).step(0.001).name('ringThickness');
             this.podiumDebugFolder.add(this.podiumMat.uniforms.uCentreOpacity, 'value')
                 .min(0).max(1).step(0.001).name('centreOpacity');
+            this.podiumDebugFolder.add(this.params, 'podiumPulseAmplitude')
+                .min(0).max(0.1).step(0.001).name('pulseAmplitude');
+            this.podiumDebugFolder.add(this.params, 'podiumPulseFrequency')
+                .min(0).max(5).step(0.1).name('pulseFrequency');
         };
     }
 
-    podiumAnimation(_delay)
+    podiumOpenAnimation(_delay)
     {
         gsap.killTweensOf(this.podiumMat.uniforms.uRadius);
         this.podiumMat.uniforms.uRadius.value = 0;
@@ -209,6 +215,27 @@ export default class Object
             duration: 1.2,
             delay: _delay,
             ease: 'elastic.out(0.3, 0.2)',
+            callbackScope: this,
+            onComplete: function() { this.podiumPulseAnimation() },
+        });
+    }
+
+    podiumPulseAnimation()
+    {
+        gsap.to(this.podiumMat.uniforms.uRadius, {
+            value: this.params.podiumRadius + this.params.podiumPulseAmplitude,
+            duration: this.params.podiumPulseFrequency,
+            ease: 'sine.inOut',
+            repeat: -1,
+            repeatDelay: this.params.podiumPulseFrequency,
+        });
+        gsap.to(this.podiumMat.uniforms.uRadius, {
+            value: this.params.podiumRadius,
+            duration: this.params.podiumPulseFrequency,
+            delay: this.params.podiumPulseFrequency,
+            ease: 'sine.inOut',
+            repeat: -1,
+            repeatDelay: this.params.podiumPulseFrequency,
         });
     }
 
