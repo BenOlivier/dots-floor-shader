@@ -48,58 +48,26 @@ export default class Object
         }
 
         this.setFloor();
-        this.setPodium();
         this.setShadowPlane();
         this.setCharacter();
         this.setCap();
     }
 
-    setBackground()
-    {
-        this.params.backgroundColorLight = '#e5e7eb';
-        this.params.backgroundColorDark = '#1b1c1d';
-
-        const backgroundGeo = new THREE.SphereGeometry(20, 32, 32);
-        this.backgroundMat = new THREE.ShaderMaterial({
-            side: THREE.BackSide,
-            vertexShader: backgroundVert,
-            fragmentShader: backgroundFrag,
-            uniforms:
-            {
-                uColor1: { value: new THREE.Color(this.params.backgroundColorLight) },
-                uColor2: { value: new THREE.Color(this.params.backgroundColorLight) },
-                uGradientRange: { value: 2 },
-                uGradientOffset: { value: 0 },
-            },
-        });
-        const backgroundMesh = new THREE.Mesh(backgroundGeo, this.backgroundMat);
-        this.scene.add(backgroundMesh);
-
-        // Debug
-        if(this.debug.active)
-        {
-            this.backgroundDebugFolder.addColor(this.params, 'backgroundColorLight').name('backgroundColorTop').onChange(() =>
-            {
-                (this.backgroundMat.uniforms.uColor1.value.set(this.params.backgroundColorLight));
-            });
-            this.backgroundDebugFolder.addColor(this.params, 'backgroundColorLight').name('backgroundColorBottom').onChange(() =>
-            {
-                (this.backgroundMat.uniforms.uColor2.value.set(this.params.backgroundColorLight));
-            });
-            this.backgroundDebugFolder.add(this.backgroundMat.uniforms.uGradientRange, 'value')
-                .min(0).max(10).step(0.1).name('gradientRange');
-            this.backgroundDebugFolder.add(this.backgroundMat.uniforms.uGradientOffset, 'value')
-                .min(-5).max(5).step(0.1).name('gradientOffset');
-        };
-    }
-
     setFloor()
     {
+        this.params.floorColorLight = '#f5f5f5';
+        this.params.floorColorDark = '#212121';
+
         this.params.dotsColorLight = '#dddfe4';
         this.params.dotsColorDark = '#333333';
 
-        this.params.floorColorLight = '#ffffff';
-        this.params.floorColorDark = '#212121';
+        this.params.podiumRingColorLight = '#ffffff';
+        this.params.podiumRingColorDark = '#292929';
+        this.params.podiumCentreColorLight = '#fafafa';
+        this.params.podiumCentreColorDark = '#292929';
+        this.params.podiumRadius = 0.022;
+        this.params.podiumPulseAmplitude = 0.001;
+        this.params.podiumPulseFrequency = 2;
         
         const floorGeo = new THREE.PlaneGeometry(10, 10, 1, 1);
         this.floorMat = new THREE.ShaderMaterial({
@@ -116,6 +84,12 @@ export default class Object
                 uDotsColor: { value: new THREE.Color(this.params.dotsColorLight) },
                 uGridScale: { value: 301 },
                 uDotRadius: { value: 0.08 },
+
+                uRingColor: { value: new THREE.Color(this.params.podiumRingColorLight) },
+                uCentreColor: { value: new THREE.Color(this.params.podiumCentreColorLight) },
+                uPodiumRadius: { value: 0 },
+                uRingThickness: { value: 0.0005 },
+                uCentreOpacity: { value: 0.6 },
             },
         });
         const floorMesh = new THREE.Mesh(floorGeo, this.floorMat);
@@ -148,58 +122,24 @@ export default class Object
                 .min(0).max(0.5).step(0.001).name('dotRadius');
             this.dotsDebugFolder.add(this.floorMat.uniforms.uGridScale, 'value')
                 .min(1).max(500).step(1).name('gridScale');
-        };
-    }
 
-    setPodium()
-    {
-        this.params.podiumRingColorLight = '#ffffff';
-        this.params.podiumRingColorDark = '#292929';
-        this.params.podiumCentreColorLight = '#fafafa';
-        this.params.podiumCentreColorDark = '#292929';
-        this.params.podiumRadius = 0.22;
-        this.params.podiumPulseAmplitude = 0.01;
-        this.params.podiumPulseFrequency = 2;
-        
-
-        const podiumGeo = new THREE.PlaneGeometry(1, 1, 1, 1);
-        this.podiumMat = new THREE.ShaderMaterial({
-            transparent: true,
-            vertexShader: podiumVert,
-            fragmentShader: podiumFrag,
-            uniforms:
-            {
-                uRingColor: { value: new THREE.Color(this.params.podiumRingColorLight) },
-                uCentreColor: { value: new THREE.Color(this.params.podiumCentreColorLight) },
-                uRadius: { value: 0 },
-                uRingThickness: { value: 0.01 },
-                uCentreOpacity: { value: 0.4 },
-            },
-        });
-        const podiumMesh = new THREE.Mesh(podiumGeo, this.podiumMat);
-        podiumMesh.rotation.x = Math.PI * -0.5;
-        podiumMesh.position.y = -0.199;
-        this.scene.add(podiumMesh);
-
-        // Debug
-        if(this.debug.active)
-        {
+            // Podium
             this.podiumDebugFolder.add(this.params, 'Podium_Animation');
             this.podiumDebugFolder.addColor(this.params, 'podiumRingColorLight').name('podiumRingColor').onChange(() =>
             {
-                this.podiumMat.uniforms.uRingColor.value.set(this.params.podiumRingColorLight);
+                this.floorMat.uniforms.uRingColor.value.set(this.params.podiumRingColorLight);
             });
             this.podiumDebugFolder.addColor(this.params, 'podiumCentreColorLight').name('podiumCentreColor').onChange(() =>
             {
-                this.podiumMat.uniforms.uCentreColor.value.set(this.params.podiumCentreColorLight);
+                this.floorMat.uniforms.uCentreColor.value.set(this.params.podiumCentreColorLight);
             });
-            this.podiumDebugFolder.add(this.params, 'podiumRadius').min(0).max(1).step(0.001).name('podiumRadius').onChange(() =>
+            this.podiumDebugFolder.add(this.params, 'podiumRadius').min(0).max(0.1).step(0.001).name('podiumRadius').onChange(() =>
             {
-                this.podiumMat.uniforms.uRadius.value = this.params.podiumRadius;
+                this.floorMat.uniforms.uPodiumRadius.value = this.params.podiumRadius;
             });
-            this.podiumDebugFolder.add(this.podiumMat.uniforms.uRingThickness, 'value')
-                .min(0).max(0.2).step(0.001).name('ringThickness');
-            this.podiumDebugFolder.add(this.podiumMat.uniforms.uCentreOpacity, 'value')
+            this.podiumDebugFolder.add(this.floorMat.uniforms.uRingThickness, 'value')
+                .min(0).max(0.005).step(0.0001).name('ringThickness');
+            this.podiumDebugFolder.add(this.floorMat.uniforms.uCentreOpacity, 'value')
                 .min(0).max(1).step(0.001).name('centreOpacity');
             this.podiumDebugFolder.add(this.params, 'podiumPulseAmplitude')
                 .min(0).max(0.1).step(0.001).name('pulseAmplitude');
@@ -210,9 +150,9 @@ export default class Object
 
     podiumOpenAnimation(_delay)
     {
-        gsap.killTweensOf(this.podiumMat.uniforms.uRadius);
-        this.podiumMat.uniforms.uRadius.value = 0;
-        gsap.to(this.podiumMat.uniforms.uRadius, {
+        gsap.killTweensOf(this.floorMat.uniforms.uPodiumRadius);
+        this.floorMat.uniforms.uPodiumRadius.value = 0;
+        gsap.to(this.floorMat.uniforms.uPodiumRadius, {
             value: this.params.podiumRadius,
             duration: 1.2,
             delay: _delay,
@@ -224,14 +164,14 @@ export default class Object
 
     podiumPulseAnimation()
     {
-        gsap.to(this.podiumMat.uniforms.uRadius, {
+        gsap.to(this.floorMat.uniforms.uPodiumRadius, {
             value: this.params.podiumRadius + this.params.podiumPulseAmplitude,
             duration: this.params.podiumPulseFrequency,
             ease: 'sine.inOut',
             repeat: -1,
             repeatDelay: this.params.podiumPulseFrequency,
         });
-        gsap.to(this.podiumMat.uniforms.uRadius, {
+        gsap.to(this.floorMat.uniforms.uPodiumRadius, {
             value: this.params.podiumRadius,
             duration: this.params.podiumPulseFrequency,
             delay: this.params.podiumPulseFrequency,
@@ -330,8 +270,8 @@ export default class Object
         this.renderer.renderer.setClearColor(this.renderer.params.backgroundColorLight);
         this.floorMat.uniforms.uFloorColor.value.set(this.params.floorColorLight);
         this.floorMat.uniforms.uDotsColor.value.set(this.params.dotsColorLight);
-        this.podiumMat.uniforms.uRingColor.value.set(this.params.podiumRingColorLight);
-        this.podiumMat.uniforms.uCentreColor.value.set(this.params.podiumCentreColorLight);
+        this.floorMat.uniforms.uRingColor.value.set(this.params.podiumRingColorLight);
+        this.floorMat.uniforms.uCentreColor.value.set(this.params.podiumCentreColorLight);
     }
 
     enterDarkMode()
@@ -339,8 +279,8 @@ export default class Object
         this.renderer.renderer.setClearColor(this.renderer.params.backgroundColorDark);
         this.floorMat.uniforms.uFloorColor.value.set(this.params.floorColorDark);
         this.floorMat.uniforms.uDotsColor.value.set(this.params.dotsColorDark);
-        this.podiumMat.uniforms.uRingColor.value.set(this.params.podiumRingColorDark);
-        this.podiumMat.uniforms.uCentreColor.value.set(this.params.podiumCentreColorDark);
+        this.floorMat.uniforms.uRingColor.value.set(this.params.podiumRingColorDark);
+        this.floorMat.uniforms.uCentreColor.value.set(this.params.podiumCentreColorDark);
     }
 
     update()

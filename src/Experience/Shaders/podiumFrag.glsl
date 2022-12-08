@@ -2,7 +2,7 @@ varying vec2 vUv;
 
 uniform vec3 uRingColor;
 uniform vec3 uCentreColor;
-uniform float uRadius;
+uniform float uPodiumRadius;
 uniform float uRingThickness;
 uniform float uCentreOpacity;
 
