@@ -20,16 +20,6 @@ export default class Object
         this.loading = this.experience.loading;
         this.renderer = this.experience.renderer;
 
-        if(this.debug.active)
-        {
-            this.dotsDebugFolder = this.debug.ui.addFolder('dots');
-            this.floorDebugFolder = this.debug.ui.addFolder('floor');
-            this.podiumDebugFolder = this.debug.ui.addFolder('podium');
-            this.dotsDebugFolder.close();
-            this.floorDebugFolder.close();
-            this.podiumDebugFolder.close();
-        }
-
         this.params = {
             Podium_Animation: () => {
                 this.podiumOpenAnimation();
@@ -42,11 +32,21 @@ export default class Object
             },
         };
 
-        this.debug.ui.add(this.params, 'Light_Mode');
-        this.debug.ui.add(this.params, 'Dark_Mode');
-        this.podiumDebugFolder.add(this.params, 'Podium_Animation');
+        if(this.debug.active)
+        {
+            this.dotsDebugFolder = this.debug.ui.addFolder('dots');
+            this.floorDebugFolder = this.debug.ui.addFolder('floor');
+            this.podiumDebugFolder = this.debug.ui.addFolder('podium');
+            this.characterDebugFolder = this.debug.ui.addFolder('character');
+            this.dotsDebugFolder.close();
+            this.floorDebugFolder.close();
+            this.podiumDebugFolder.close();
+            this.characterDebugFolder.close();
 
-        // this.setBackground();
+            this.debug.ui.add(this.params, 'Light_Mode');
+            this.debug.ui.add(this.params, 'Dark_Mode');
+        }
+
         this.setFloor();
         this.setPodium();
         this.setShadowPlane();
@@ -158,7 +158,7 @@ export default class Object
         this.params.podiumCentreColorLight = '#fafafa';
         this.params.podiumCentreColorDark = '#292929';
         this.params.podiumRadius = 0.22;
-        this.params.podiumPulseAmplitude = 0.02;
+        this.params.podiumPulseAmplitude = 0.01;
         this.params.podiumPulseFrequency = 2;
         
 
@@ -184,6 +184,7 @@ export default class Object
         // Debug
         if(this.debug.active)
         {
+            this.podiumDebugFolder.add(this.params, 'Podium_Animation');
             this.podiumDebugFolder.addColor(this.params, 'podiumRingColorLight').name('podiumRingColor').onChange(() =>
             {
                 this.podiumMat.uniforms.uRingColor.value.set(this.params.podiumRingColorLight);
@@ -269,6 +270,8 @@ export default class Object
 
     setCharacter()
     {
+        this.params.animateCharacter = true;
+        
         const characterResource = this.resources.items.characterModel;
 
         const character = characterResource.scene;
@@ -295,6 +298,11 @@ export default class Object
         this.animation.actions.main = this.animation.mixer.clipAction(characterResource.animations[0]);
         
         this.animation.actions.main.play();
+
+        if(this.debug.active)
+        {
+            this.characterDebugFolder.add(this.params, 'animateCharacter');
+        }
     }
 
     setCap()
@@ -337,6 +345,9 @@ export default class Object
 
     update()
     {
-        this.animation.mixer.update(this.time.delta * 0.0002);
+        if(this.params.animateCharacter)
+        {
+            this.animation.mixer.update(this.time.delta * 0.0002);
+        }
     }
 }
