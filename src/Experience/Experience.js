@@ -38,8 +38,8 @@ export default class Experience
         this.loading = new Loading()
         this.resources = new Resources(sources)
         this.pointer = new Pointer()
-        this.renderer = new Renderer()
         this.world = new World()
+        this.renderer = new Renderer()
 
         // Resize event
         this.sizes.on('resize', () =>

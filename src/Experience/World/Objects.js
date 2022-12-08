@@ -3,10 +3,6 @@ import gsap from 'gsap';
 import Experience from '../Experience.js';
 import floorVert from '../Shaders/floorVert.glsl';
 import floorFrag from '../Shaders/floorFrag.glsl';
-import podiumVert from '../Shaders/podiumVert.glsl';
-import podiumFrag from '../Shaders/podiumFrag.glsl';
-import backgroundVert from '../Shaders/backgroundVert.glsl';
-import backgroundFrag from '../Shaders/backgroundFrag.glsl';
 
 export default class Object
 {
@@ -37,11 +33,11 @@ export default class Object
             this.dotsDebugFolder = this.debug.ui.addFolder('dots');
             this.floorDebugFolder = this.debug.ui.addFolder('floor');
             this.podiumDebugFolder = this.debug.ui.addFolder('podium');
-            this.characterDebugFolder = this.debug.ui.addFolder('character');
+            this.globalDebugFolder = this.debug.ui.addFolder('global');
             this.dotsDebugFolder.close();
             this.floorDebugFolder.close();
             this.podiumDebugFolder.close();
-            this.characterDebugFolder.close();
+            this.globalDebugFolder.close();
 
             this.debug.ui.add(this.params, 'Light_Mode');
             this.debug.ui.add(this.params, 'Dark_Mode');
@@ -55,7 +51,7 @@ export default class Object
 
     setFloor()
     {
-        this.params.floorColorLight = '#f5f5f5';
+        this.params.floorColorLight = '#fafafa';
         this.params.floorColorDark = '#212121';
 
         this.params.dotsColorLight = '#dddfe4';
@@ -88,7 +84,7 @@ export default class Object
                 uRingColor: { value: new THREE.Color(this.params.podiumRingColorLight) },
                 uCentreColor: { value: new THREE.Color(this.params.podiumCentreColorLight) },
                 uPodiumRadius: { value: 0 },
-                uRingThickness: { value: 0.0005 },
+                uRingThickness: { value: 0.0008 },
                 uCentreOpacity: { value: 0.6 },
             },
         });
@@ -241,7 +237,7 @@ export default class Object
 
         if(this.debug.active)
         {
-            this.characterDebugFolder.add(this.params, 'animateCharacter');
+            this.globalDebugFolder.add(this.params, 'animateCharacter');
         }
     }
 
