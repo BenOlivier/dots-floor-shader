@@ -74,11 +74,12 @@ export default class Loading
 
     setOverlay()
     {
-        this.debugObject.overlayColor = '#c8c8c8'
+        this.debugObject.overlayColor = '#e5e7eb'
 
         this.overlayGeometry = new THREE.PlaneGeometry(2, 2, 1, 1)
         this.overlayMaterial = new THREE.ShaderMaterial({
             transparent: true,
+            // depthTest: false,
             uniforms:
             {
                 uAlpha: { value: 1 },
@@ -106,7 +107,7 @@ export default class Loading
 
         this.overlay = new THREE.Mesh(this.overlayGeometry, this.overlayMaterial)
         this.overlay.renderOrder = 0
-        // this.scene.add(this.overlay)
+        this.scene.add(this.overlay)
 
         if(this.debug.active)
         {
@@ -119,17 +120,17 @@ export default class Loading
 
     setLoadingBar()
     {
-        this.loadingBarWidth = 500 / this.sizes.width
-        this.loadingBarHeight = 8.5 / this.sizes.height
+        this.loadingBarWidth = (2 / this.sizes.width) * 250;
+        this.loadingBarHeight = (2 / this.sizes.height) * 4;
 
-        this.debugObject.barColor = '#5797ff'
-        this.debugObject.backgroundColor = '#5f5f5f'
+        this.debugObject.barColor = '#518ef0'
+        this.debugObject.backgroundColor = '#fafafa'
         
         this.loadingBarGeometry = new THREE.PlaneGeometry(
             this.loadingBarWidth, this.loadingBarHeight, 1, 1)
         this.loadingBarMaterial = new THREE.ShaderMaterial({
             transparent: true,
-
+            // depthTest: false,
             uniforms:
             {
                 uBarColor: { value: new THREE.Color(this.debugObject.barColor) },
@@ -210,7 +211,7 @@ export default class Loading
             delay: this.params.loadingDuration,
             ease: 'linear',
             callbackScope: this,
-            onComplete: function() { this.experience.world.objects.podiumOpenAnimation(0); }
+            onComplete: function() { this.experience.world.objects.podiumOpenAnimation(0.3); }
         })
     }
 
@@ -239,11 +240,6 @@ export default class Loading
 
     resize()
     {
-        this.loadingBarMaterial.uniforms.uResolution.value.x
-            = this.sizes.width
-        this.loadingBarMaterial.uniforms.uResolution.value.y
-            = this.sizes.height
-
-        this.aspectRatio = this.sizes.width / this.sizes.height
+        
     }
 }

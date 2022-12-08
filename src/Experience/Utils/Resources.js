@@ -30,8 +30,8 @@ export default class Resources extends EventEmitter
             // Loaded
             () =>
             {
-                this.loading.setLoadingBar()
                 this.loading.setOverlay()
+                this.loading.setLoadingBar()
                 this.loading.initiateLoadedSequence()
             },
             // Progress
