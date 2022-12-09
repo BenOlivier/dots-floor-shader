@@ -48,7 +48,7 @@ export default class Object
         this.setShadowPlane();
         this.setCustomuseIcon();
         this.setCharacter();
-        this.setCap();
+        // this.setCap();
     }
 
     setFloor()
@@ -59,10 +59,8 @@ export default class Object
         this.params.dotsColorLight = '#dddfe4';
         this.params.dotsColorDark = '#333333';
 
-        this.params.podiumRingColorLight = '#ffffff';
-        this.params.podiumRingColorDark = '#292929';
-        this.params.podiumCentreColorLight = '#fafafa';
-        this.params.podiumCentreColorDark = '#292929';
+        this.params.podiumColorLight = '#ffffff';
+        this.params.podiumColorDark = '#292929';
         this.params.podiumRadius = 0.022;
         this.params.podiumPulseAmplitude = 0.001;
         this.params.podiumPulseFrequency = 2;
@@ -83,8 +81,7 @@ export default class Object
                 uGridScale: { value: 301 },
                 uDotRadius: { value: 0.08 },
 
-                uRingColor: { value: new THREE.Color(this.params.podiumRingColorLight) },
-                uCentreColor: { value: new THREE.Color(this.params.podiumCentreColorLight) },
+                uPodiumColor: { value: new THREE.Color(this.params.podiumColorLight) },
                 uPodiumRadius: { value: 0 },
                 uRingThickness: { value: 0.0008 },
                 uCentreOpacity: { value: 0.6 },
@@ -123,13 +120,9 @@ export default class Object
 
             // Podium
             this.podiumDebugFolder.add(this.params, 'Podium_Animation');
-            this.podiumDebugFolder.addColor(this.params, 'podiumRingColorLight').name('podiumRingColor').onChange(() =>
+            this.podiumDebugFolder.addColor(this.params, 'podiumColorLight').name('podiumColor').onChange(() =>
             {
-                this.floorMat.uniforms.uRingColor.value.set(this.params.podiumRingColorLight);
-            });
-            this.podiumDebugFolder.addColor(this.params, 'podiumCentreColorLight').name('podiumCentreColor').onChange(() =>
-            {
-                this.floorMat.uniforms.uCentreColor.value.set(this.params.podiumCentreColorLight);
+                this.floorMat.uniforms.uPodiumColor.value.set(this.params.podiumColorLight);
             });
             this.podiumDebugFolder.add(this.params, 'podiumRadius').min(0).max(0.1).step(0.001).name('podiumRadius').onChange(() =>
             {
@@ -291,21 +284,38 @@ export default class Object
 
     setCustomuseIcon()
     {
+        this.params.custoScale = 0.18;
+        
         const texture = this.resources.items.customuseIcon;
         texture.encoding = THREE.sRGBEncoding;
         
-        const custoGeo = new THREE.PlaneGeometry(0.1, 0.1, 1, 1);
+        const custoGeo = new THREE.PlaneGeometry(this.params.custoScale, this.params.custoScale / 4, 1, 1);
         this.custoMat = new THREE.MeshBasicMaterial({
             map: texture,
             transparent: true,
-            opacity: 0.2,
+            opacity: 0.1,
         });
-        const custoMesh = new THREE.Mesh(custoGeo, this.custoMat);
-        custoMesh.rotation.x = Math.PI * -0.5;
-        custoMesh.position.y = -0.196;
-        // custoMesh.position.z = 0.12;
-        custoMesh.renderOrder = 5;
-        this.scene.add(custoMesh);
+        const custoMesh1 = new THREE.Mesh(custoGeo, this.custoMat);
+        custoMesh1.rotation.x = Math.PI * -0.5;
+        custoMesh1.position.y = -0.196;
+        custoMesh1.position.z = 0.13;
+        custoMesh1.renderOrder = 5;
+        
+        const custoMesh2 = new THREE.Mesh(custoGeo, this.custoMat);
+        custoMesh2.rotation.x = Math.PI * -0.5;
+        custoMesh2.rotation.z = Math.PI * 1;
+        custoMesh2.position.y = -0.196;
+        custoMesh2.position.z = -0.13;
+        custoMesh2.renderOrder = 5;
+
+        this.scene.add(custoMesh1, custoMesh2);
+
+        // Debug
+        if(this.debug.active)
+        {
+            this.podiumDebugFolder.add(this.custoMat, 'opacity')
+                .min(0).max(1).step(0.001).name('custoOpacity');
+        };
     }
 
     setCap()
@@ -333,8 +343,7 @@ export default class Object
         this.renderer.renderer.setClearColor(this.renderer.params.backgroundColorLight);
         this.floorMat.uniforms.uFloorColor.value.set(this.params.floorColorLight);
         this.floorMat.uniforms.uDotsColor.value.set(this.params.dotsColorLight);
-        this.floorMat.uniforms.uRingColor.value.set(this.params.podiumRingColorLight);
-        this.floorMat.uniforms.uCentreColor.value.set(this.params.podiumCentreColorLight);
+        this.floorMat.uniforms.uPodiumColor.value.set(this.params.podiumColorLight);
     }
 
     enterDarkMode()
@@ -342,8 +351,7 @@ export default class Object
         this.renderer.renderer.setClearColor(this.renderer.params.backgroundColorDark);
         this.floorMat.uniforms.uFloorColor.value.set(this.params.floorColorDark);
         this.floorMat.uniforms.uDotsColor.value.set(this.params.dotsColorDark);
-        this.floorMat.uniforms.uRingColor.value.set(this.params.podiumRingColorDark);
-        this.floorMat.uniforms.uCentreColor.value.set(this.params.podiumCentreColorDark);
+        this.floorMat.uniforms.uPodiumColor.value.set(this.params.podiumColorDark);
     }
 
     update()

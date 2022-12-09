@@ -29,6 +29,7 @@ export default class Renderer
         })
         this.renderer.sortObjects = false;
         this.renderer.setClearColor(this.params.backgroundColorLight);
+        // this.renderer.setClearColor('#000000');
         this.renderer.physicallyCorrectLights = true
         this.renderer.outputEncoding = THREE.sRGBEncoding
         this.renderer.toneMapping = THREE.NoToneMapping
