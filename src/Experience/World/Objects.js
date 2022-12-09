@@ -39,12 +39,14 @@ export default class Object
             this.podiumDebugFolder.close();
             this.globalDebugFolder.close();
 
-            this.debug.ui.add(this.params, 'Light_Mode');
-            this.debug.ui.add(this.params, 'Dark_Mode');
+            this.globalDebugFolder.add(this.params, 'Light_Mode');
+            this.globalDebugFolder.add(this.params, 'Dark_Mode');
         }
 
         this.setFloor();
+        // this.setProgressFloor();
         this.setShadowPlane();
+        this.setCustomuseIcon();
         this.setCharacter();
         this.setCap();
     }
@@ -144,6 +146,52 @@ export default class Object
         };
     }
 
+    setProgressFloor()
+    {
+        const progressFloorGeo = new THREE.PlaneGeometry(10, 10, 1, 1);
+        this.progressFloorMat = new THREE.ShaderMaterial({
+            transparent: true,
+            vertexShader: floorVert,
+            fragmentShader: floorFrag,
+            uniforms:
+            {
+                uFloorColor: { value: new THREE.Color('#fafafa') },
+                uFloorRadius: { value: 0.2 },
+                uFloorPower: { value: 1 },
+                uFresnelPower: { value: 20 },
+
+                uDotsColor: { value: new THREE.Color('#dddfe4') },
+                uGridScale: { value: 301 },
+                uDotRadius: { value: 0.08 },
+
+                uRingColor: { value: new THREE.Color('#ffffff') },
+                uCentreColor: { value: new THREE.Color('#fafafa') },
+                uPodiumRadius: { value: 0 },
+                uRingThickness: { value: 0.0008 },
+                uCentreOpacity: { value: 0.6 },
+            },
+        });
+        const progressFloorMesh = new THREE.Mesh(progressFloorGeo, this.progressFloorMat);
+        progressFloorMesh.rotation.x = Math.PI * -0.5;
+        progressFloorMesh.position.y = -0.2;
+        progressFloorMesh.renderOrder = 1;
+        this.scene.add(progressFloorMesh);
+
+        this.params.developmentStage = {
+            Just_Dots: 'A',
+            Radial_Gradient: 'B',
+            Fresnel_Opacity: 'C',
+            Podium: 'D'
+        }
+
+        // Debug
+        // if(this.debug.active)
+        // {
+        //     this.globalDebugFolder.add(text, 'developmentStage', { Just_Dots: 'A', Radial_Gradient: 'B', Fresnel_Opacity: 'C', Podium: 'D' } );
+        //     this.globalDebugFolder.add(text, 'developmentStage', { Just_Dots: 'A', Radial_Gradient: 'B', Fresnel_Opacity: 'C', Podium: 'D' } );
+        // };
+    }
+
     podiumOpenAnimation(_delay)
     {
         gsap.killTweensOf(this.floorMat.uniforms.uPodiumRadius);
@@ -239,6 +287,25 @@ export default class Object
         {
             this.globalDebugFolder.add(this.params, 'animateCharacter');
         }
+    }
+
+    setCustomuseIcon()
+    {
+        const texture = this.resources.items.customuseIcon;
+        texture.encoding = THREE.sRGBEncoding;
+        
+        const custoGeo = new THREE.PlaneGeometry(0.1, 0.1, 1, 1);
+        this.custoMat = new THREE.MeshBasicMaterial({
+            map: texture,
+            transparent: true,
+            opacity: 0.2,
+        });
+        const custoMesh = new THREE.Mesh(custoGeo, this.custoMat);
+        custoMesh.rotation.x = Math.PI * -0.5;
+        custoMesh.position.y = -0.196;
+        // custoMesh.position.z = 0.12;
+        custoMesh.renderOrder = 5;
+        this.scene.add(custoMesh);
     }
 
     setCap()

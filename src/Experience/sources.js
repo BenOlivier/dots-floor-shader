@@ -10,8 +10,8 @@ export default [
         path: 'models/cap.glb'
     },
     {
-        name: 'deadpoolBlur',
+        name: 'customuseIcon',
         type: 'texture',
-        path: 'images/deadpool_blur.jpg'
+        path: 'images/customuseIcon.png'
     }
 ]
