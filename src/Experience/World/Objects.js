@@ -3,6 +3,8 @@ import gsap from 'gsap';
 import Experience from '../Experience.js';
 import floorVert from '../Shaders/floorVert.glsl';
 import floorFrag from '../Shaders/floorFrag.glsl';
+import custoVert from '../Shaders/custoVert.glsl';
+import custoFrag from '../Shaders/custoFrag.glsl';
 
 export default class Object
 {
@@ -284,37 +286,42 @@ export default class Object
 
     setCustomuseIcon()
     {
-        this.params.custoScale = 0.18;
+        this.params.custoScale = 0.385;
+        this.params.custoAlpha = 0.1;
         
         const texture = this.resources.items.customuseIcon;
         texture.encoding = THREE.sRGBEncoding;
         
-        const custoGeo = new THREE.PlaneGeometry(this.params.custoScale, this.params.custoScale / 4, 1, 1);
-        this.custoMat = new THREE.MeshBasicMaterial({
-            map: texture,
+        const custoGeo = new THREE.PlaneGeometry(0.5, 0.5, 1, 1);
+        this.custoMat = new THREE.ShaderMaterial({
             transparent: true,
-            opacity: 0.1,
+            vertexShader: custoVert,
+            fragmentShader: custoFrag,
+            uniforms:
+            {
+                uTexture: { value: texture },
+                uScale: { value: this.params.custoScale },
+                uAlpha: { value: this.params.custoAlpha }
+            },
         });
-        const custoMesh1 = new THREE.Mesh(custoGeo, this.custoMat);
-        custoMesh1.rotation.x = Math.PI * -0.5;
-        custoMesh1.position.y = -0.196;
-        custoMesh1.position.z = 0.13;
-        custoMesh1.renderOrder = 5;
-        
-        const custoMesh2 = new THREE.Mesh(custoGeo, this.custoMat);
-        custoMesh2.rotation.x = Math.PI * -0.5;
-        custoMesh2.rotation.z = Math.PI * 1;
-        custoMesh2.position.y = -0.196;
-        custoMesh2.position.z = -0.13;
-        custoMesh2.renderOrder = 5;
+        const custoMesh = new THREE.Mesh(custoGeo, this.custoMat);
+        custoMesh.rotation.x = Math.PI * -0.5;
+        custoMesh.position.y = -0.19;
+        custoMesh.renderOrder = 5;
 
-        this.scene.add(custoMesh1, custoMesh2);
+        this.scene.add(custoMesh);
 
         // Debug
         if(this.debug.active)
         {
-            this.podiumDebugFolder.add(this.custoMat, 'opacity')
-                .min(0).max(1).step(0.001).name('custoOpacity');
+            this.podiumDebugFolder.add(this.params, 'custoScale')
+                .min(0).max(1).step(0.01).name('custoScale').onChange(() => {
+                    this.custoMat.uniforms.uScale.value = this.params.custoScale;
+                })
+            this.podiumDebugFolder.add(this.params, 'custoAlpha')
+                .min(0).max(1).step(0.01).name('custoAlpha').onChange(() => {
+                    this.custoMat.uniforms.uAlpha.value = this.params.custoAlpha;
+                })
         };
     }
 

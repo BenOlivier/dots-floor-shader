@@ -12,7 +12,7 @@ export default class Debug
                 width: 300
             })
 
-            // this.ui.close();
+            this.ui.close();
         }
     }
 }
