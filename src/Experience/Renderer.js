@@ -29,7 +29,6 @@ export default class Renderer
         })
         this.renderer.sortObjects = false;
         this.renderer.setClearColor(this.params.backgroundColorLight);
-        // this.renderer.setClearColor('#000000');
         this.renderer.physicallyCorrectLights = true
         this.renderer.outputEncoding = THREE.sRGBEncoding
         this.renderer.toneMapping = THREE.NoToneMapping
@@ -39,14 +38,16 @@ export default class Renderer
         this.renderer.setSize(this.sizes.width, this.sizes.height)
         this.renderer.setPixelRatio(Math.min(this.sizes.pixelRatio, 2))
 
-        // Debug
-        // if(this.debug.active)
-        // {
-        //     this.debug.ui.globalDebugFolder.addColor(this.params, 'backgroundColorLight').name('backgroundColor').onChange(() =>
-        //     {
-        //         (this.renderer.setClearColor(this.params.backgroundColorLight));
-        //     });
-        // }
+        //Debug
+        if(this.debug.active)
+        {
+            this.backgroundDebugFolder = this.debug.ui.addFolder('background');
+            this.backgroundDebugFolder.close();
+            this.backgroundDebugFolder.addColor(this.params, 'backgroundColorLight').name('backgroundColor').onChange(() =>
+            {
+                (this.renderer.setClearColor(this.params.backgroundColorLight));
+            });
+        }
     }
 
     resize()

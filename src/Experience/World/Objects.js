@@ -33,11 +33,9 @@ export default class Object
 
         if(this.debug.active)
         {
-            this.dotsDebugFolder = this.debug.ui.addFolder('dots');
             this.floorDebugFolder = this.debug.ui.addFolder('floor');
             this.podiumDebugFolder = this.debug.ui.addFolder('podium');
             this.globalDebugFolder = this.debug.ui.addFolder('global');
-            this.dotsDebugFolder.close();
             this.floorDebugFolder.close();
             this.podiumDebugFolder.close();
             this.globalDebugFolder.close();
@@ -121,13 +119,13 @@ export default class Object
                 .min(0).max(100).step(0.01).name('fresnelPower');
 
             // Dots
-            this.dotsDebugFolder.addColor(this.params, 'dotsColorLight').name('dotsColor').onChange(() =>
+            this.floorDebugFolder.addColor(this.params, 'dotsColorLight').name('dotsColor').onChange(() =>
             {
                 (this.floorMat.uniforms.uDotsColor.value.set(this.params.dotsColorLight));
             });
-            this.dotsDebugFolder.add(this.floorMat.uniforms.uDotRadius, 'value')
+            this.floorDebugFolder.add(this.floorMat.uniforms.uDotRadius, 'value')
                 .min(0).max(0.5).step(0.001).name('dotRadius');
-            this.dotsDebugFolder.add(this.floorMat.uniforms.uGridScale, 'value')
+            this.floorDebugFolder.add(this.floorMat.uniforms.uGridScale, 'value')
                 .min(1).max(500).step(1).name('gridScale');
 
             // Podium
@@ -344,6 +342,7 @@ export default class Object
 
     enterLightMode()
     {
+        this.renderer.params.backgroundColorLight = '#e5e7eb';
         this.renderer.renderer.setClearColor(this.renderer.params.backgroundColorLight);
         this.floorMat.uniforms.uFloorColor.value.set(this.params.floorColorLight);
         this.floorMat.uniforms.uDotsColor.value.set(this.params.dotsColorLight);
