@@ -290,7 +290,8 @@ export default class Object
                 uTexture: { value: texture },
                 uScale: { value: this.params.custoScale },
                 uOffset: { value: this.params.custoOffset },
-                uAlpha: { value: this.params.custoAlpha }
+                uAlpha: { value: this.params.custoAlpha },
+                uDarkMode: { value: false },
             },
         });
         const custoMesh = new THREE.Mesh(custoGeo, this.custoMat);
@@ -347,6 +348,7 @@ export default class Object
         this.floorMat.uniforms.uFloorColor.value.set(this.params.floorColorLight);
         this.floorMat.uniforms.uDotsColor.value.set(this.params.dotsColorLight);
         this.floorMat.uniforms.uPodiumColor.value.set(this.params.podiumColorLight);
+        this.custoMat.uniforms.uDarkMode.value = false;
     }
 
     enterDarkMode()
@@ -355,6 +357,7 @@ export default class Object
         this.floorMat.uniforms.uFloorColor.value.set(this.params.floorColorDark);
         this.floorMat.uniforms.uDotsColor.value.set(this.params.dotsColorDark);
         this.floorMat.uniforms.uPodiumColor.value.set(this.params.podiumColorDark);
+        this.custoMat.uniforms.uDarkMode.value = true;
     }
 
     update()

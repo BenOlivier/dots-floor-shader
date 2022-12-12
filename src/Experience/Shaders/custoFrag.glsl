@@ -4,6 +4,7 @@ uniform sampler2D uTexture;
 uniform float uScale;
 uniform float uOffset;
 uniform float uAlpha;
+uniform bool uDarkMode;
 
 mat2 rotationMatrix()
 {
@@ -27,6 +28,9 @@ void main()
     combinedUv = vec2(combinedUv.x, combinedUv.y + uOffset);
     // Texture color
     vec4 color = texture2D(uTexture, combinedUv);
+
+    // Dark mode bool - DELETE IN PRODUCTION IMPLEMENTATION IF NOT NEEDED
+    if(uDarkMode) color = vec4(1.0 - color.rgb, color.a);
 
     gl_FragColor = vec4(color.rgb, color.a * uAlpha);
 }
