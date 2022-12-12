@@ -4,7 +4,6 @@ varying vec3 vNormalW;
 // Floor
 uniform vec3 uFloorColor;
 uniform float uFloorRadius;
-uniform float uFloorPower;
 uniform float uFresnelPower;
 // Dots
 uniform vec3 uDotsColor;
@@ -50,9 +49,7 @@ void main()
     gl_FragColor = vec4(combinedColor, radialGradient * fresnelTerm);
 
 
-    /////////////////////////////////////////////////
-    // BOOLS - DELETE IN PRODUCTION IMPLEMENTATION //
-    /////////////////////////////////////////////////
+    // BOOLS - DELETE IN PRODUCTION IMPLEMENTATION
     gl_FragColor = vec4(uPodiumBool? combinedColor : uDotsBool? floorColor : uFloorColor, 
         (uGradientBool? radialGradient : 1.0) * (uFresnelBool? fresnelTerm : 1.0));
 }

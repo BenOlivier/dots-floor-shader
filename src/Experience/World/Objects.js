@@ -29,6 +29,9 @@ export default class Object
             Dark_Mode: () => {
                 this.enterDarkMode();
             },
+            Reset_Params: () => {
+                this.resetParams();
+            },
         };
 
         if(this.debug.active)
@@ -42,11 +45,12 @@ export default class Object
 
             this.globalDebugFolder.add(this.params, 'Light_Mode');
             this.globalDebugFolder.add(this.params, 'Dark_Mode');
+            this.globalDebugFolder.add(this.params, 'Reset_Params');
         }
 
         this.setFloor();
         this.setShadowPlane();
-        this.setCustomuseIcon();
+        this.setWatermark();
         this.setCharacter();
         // this.setCap();
     }
@@ -67,8 +71,8 @@ export default class Object
         this.params.podiumColorLight = '#ffffff';
         this.params.podiumColorDark = '#292929';
         this.params.podiumRadius = 0.022;
-        this.params.podiumPulseAmplitude = 0.001;
-        this.params.podiumPulseFrequency = 2;
+        // this.params.podiumPulseAmplitude = 0.001;
+        // this.params.podiumPulseFrequency = 2;
         
         const floorGeo = new THREE.PlaneGeometry(10, 10, 1, 1);
         this.floorMat = new THREE.ShaderMaterial({
@@ -79,7 +83,6 @@ export default class Object
             {
                 uFloorColor: { value: new THREE.Color(this.params.floorColorLight) },
                 uFloorRadius: { value: 0.2 },
-                uFloorPower: { value: 1 },
                 uFresnelPower: { value: 20 },
 
                 uDotsColor: { value: new THREE.Color(this.params.dotsColorLight) },
@@ -113,8 +116,6 @@ export default class Object
             });
             this.floorDebugFolder.add(this.floorMat.uniforms.uFloorRadius, 'value')
                 .min(0).max(0.5).step(0.01).name('floorRadius');
-            this.floorDebugFolder.add(this.floorMat.uniforms.uFloorPower, 'value')
-                .min(0).max(10).step(0.01).name('floorPower');
             this.floorDebugFolder.add(this.floorMat.uniforms.uFresnelPower, 'value')
                 .min(0).max(100).step(0.01).name('fresnelPower');
 
@@ -142,16 +143,16 @@ export default class Object
                 .min(0).max(0.005).step(0.0001).name('ringThickness');
             this.podiumDebugFolder.add(this.floorMat.uniforms.uCentreOpacity, 'value')
                 .min(0).max(1).step(0.001).name('centreOpacity');
-            this.podiumDebugFolder.add(this.params, 'podiumPulseAmplitude')
-                .min(0).max(0.01).step(0.0001).name('pulseAmplitude').onChange(() => {
-                    gsap.killTweensOf(this.floorMat.uniforms.uPodiumRadius);
-                    this.podiumPulseAnimation();
-                });
-            this.podiumDebugFolder.add(this.params, 'podiumPulseFrequency')
-                .min(0).max(5).step(0.1).name('pulseFrequency').onChange(() => {
-                    gsap.killTweensOf(this.floorMat.uniforms.uPodiumRadius);
-                    this.podiumPulseAnimation();
-                });
+            // this.podiumDebugFolder.add(this.params, 'podiumPulseAmplitude')
+            //     .min(0).max(0.01).step(0.0001).name('pulseAmplitude').onChange(() => {
+            //         gsap.killTweensOf(this.floorMat.uniforms.uPodiumRadius);
+            //         this.podiumPulseAnimation();
+            //     });
+            // this.podiumDebugFolder.add(this.params, 'podiumPulseFrequency')
+            //     .min(0).max(5).step(0.1).name('pulseFrequency').onChange(() => {
+            //         gsap.killTweensOf(this.floorMat.uniforms.uPodiumRadius);
+            //         this.podiumPulseAnimation();
+            //     });
 
             // Bools
             this.globalDebugFolder.add(this.params,'showDots').onChange(() => {
@@ -178,41 +179,41 @@ export default class Object
             duration: 1.2,
             delay: _delay,
             ease: 'elastic.out(0.3, 0.2)',
-            callbackScope: this,
-            onComplete: function() { this.podiumPulseAnimation() },
+            // callbackScope: this,
+            // onComplete: function() { this.podiumPulseAnimation() },
         });
     }
 
-    podiumPulseAnimation()
-    {
-        gsap.to(this.floorMat.uniforms.uPodiumRadius, {
-            value: this.params.podiumRadius + this.params.podiumPulseAmplitude,
-            duration: this.params.podiumPulseFrequency,
-            ease: 'sine.inOut',
-            repeat: -1,
-            repeatDelay: this.params.podiumPulseFrequency,
-        });
-        gsap.to(this.floorMat.uniforms.uPodiumRadius, {
-            value: this.params.podiumRadius,
-            duration: this.params.podiumPulseFrequency,
-            delay: this.params.podiumPulseFrequency,
-            ease: 'sine.inOut',
-            repeat: -1,
-            repeatDelay: this.params.podiumPulseFrequency,
-        });
-    }
+    // podiumPulseAnimation()
+    // {
+    //     gsap.to(this.floorMat.uniforms.uPodiumRadius, {
+    //         value: this.params.podiumRadius + this.params.podiumPulseAmplitude,
+    //         duration: this.params.podiumPulseFrequency,
+    //         ease: 'sine.inOut',
+    //         repeat: -1,
+    //         repeatDelay: this.params.podiumPulseFrequency,
+    //     });
+    //     gsap.to(this.floorMat.uniforms.uPodiumRadius, {
+    //         value: this.params.podiumRadius,
+    //         duration: this.params.podiumPulseFrequency,
+    //         delay: this.params.podiumPulseFrequency,
+    //         ease: 'sine.inOut',
+    //         repeat: -1,
+    //         repeatDelay: this.params.podiumPulseFrequency,
+    //     });
+    // }
 
     setShadowPlane()
     {
         this.params.shadowOpacity = 0.05;
         
         const shadowPlaneGeo = new THREE.PlaneGeometry(2, 2, 1, 1);
-        const shadowPlaneMat = new THREE.ShadowMaterial({
+        this.shadowPlaneMat = new THREE.ShadowMaterial({
             color: '#000000',
             opacity: this.params.shadowOpacity,
             transparent: true,
         });
-        const shadowPlaneMesh = new THREE.Mesh(shadowPlaneGeo, shadowPlaneMat);
+        const shadowPlaneMesh = new THREE.Mesh(shadowPlaneGeo, this.shadowPlaneMat);
         shadowPlaneMesh.rotation.x = Math.PI * -0.5;
         shadowPlaneMesh.position.y = -0.197;
         shadowPlaneMesh.receiveShadow = true;
@@ -224,7 +225,7 @@ export default class Object
             this.floorDebugFolder.add(this.params, 'shadowOpacity')
                 .min(0).max(1).step(0.01).name('shadowOpacity').onChange(() =>
                 {
-                    shadowPlaneMat.opacity = this.params.shadowOpacity;
+                    this.shadowPlaneMat.opacity = this.params.shadowOpacity;
                 });
         }
     }
@@ -268,7 +269,7 @@ export default class Object
         }
     }
 
-    setCustomuseIcon()
+    setWatermark()
     {
         this.params.showWatermark = true;
         this.params.custoScale = 0.35;
@@ -357,6 +358,26 @@ export default class Object
         this.floorMat.uniforms.uDotsColor.value.set(this.params.dotsColorDark);
         this.floorMat.uniforms.uPodiumColor.value.set(this.params.podiumColorDark);
         this.custoMat.uniforms.uDarkMode.value = true;
+    }
+
+    resetParams()
+    {
+        // Floor
+        this.floorMat.uniforms.uFloorColor.value.set('#fafafa');
+        this.floorMat.uniforms.uDotsColor.value.set('#dddfe4');
+        this.floorMat.uniforms.uPodiumColor.value.set('#ffffff');
+        this.floorMat.uniforms.uPodiumRadius.value = 0.022;
+        this.floorMat.uniforms.uRingThickness.value = 0.0008;
+        this.floorMat.uniforms.uCentreOpacity.value = 0.6;
+        this.floorMat.uniforms.uFloorRadius.value = 0.2;
+        this.floorMat.uniforms.uFresnelPower.value = 20;
+        this.floorMat.uniforms.uDotRadius.value = 0.08;
+        this.floorMat.uniforms.uGridScale.value = 301;
+        this.shadowPlaneMat.opacity = 0.05;
+        // Watermark
+        this.custoMat.uniforms.uScale.value = 0.35;
+        this.custoMat.uniforms.uAlpha.value = 0.1;
+        this.custoMat.uniforms.uOffset.value = 0;
     }
 
     update()
