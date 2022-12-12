@@ -40,7 +40,7 @@ export default class Object
             this.dotsDebugFolder.close();
             this.floorDebugFolder.close();
             this.podiumDebugFolder.close();
-            // this.globalDebugFolder.close();
+            this.globalDebugFolder.close();
 
             this.globalDebugFolder.add(this.params, 'Light_Mode');
             this.globalDebugFolder.add(this.params, 'Dark_Mode');
@@ -145,9 +145,15 @@ export default class Object
             this.podiumDebugFolder.add(this.floorMat.uniforms.uCentreOpacity, 'value')
                 .min(0).max(1).step(0.001).name('centreOpacity');
             this.podiumDebugFolder.add(this.params, 'podiumPulseAmplitude')
-                .min(0).max(0.1).step(0.001).name('pulseAmplitude');
+                .min(0).max(0.01).step(0.0001).name('pulseAmplitude').onChange(() => {
+                    gsap.killTweensOf(this.floorMat.uniforms.uPodiumRadius);
+                    this.podiumPulseAnimation();
+                });
             this.podiumDebugFolder.add(this.params, 'podiumPulseFrequency')
-                .min(0).max(5).step(0.1).name('pulseFrequency');
+                .min(0).max(5).step(0.1).name('pulseFrequency').onChange(() => {
+                    gsap.killTweensOf(this.floorMat.uniforms.uPodiumRadius);
+                    this.podiumPulseAnimation();
+                });
 
             // Bools
             this.globalDebugFolder.add(this.params,'showDots').onChange(() => {
@@ -163,52 +169,6 @@ export default class Object
                 this.floorMat.uniforms.uPodiumBool.value = this.params.showPodium;
             })
         };
-    }
-
-    setProgressFloor()
-    {
-        const progressFloorGeo = new THREE.PlaneGeometry(10, 10, 1, 1);
-        this.progressFloorMat = new THREE.ShaderMaterial({
-            transparent: true,
-            vertexShader: floorVert,
-            fragmentShader: floorFrag,
-            uniforms:
-            {
-                uFloorColor: { value: new THREE.Color('#fafafa') },
-                uFloorRadius: { value: 0.2 },
-                uFloorPower: { value: 1 },
-                uFresnelPower: { value: 20 },
-
-                uDotsColor: { value: new THREE.Color('#dddfe4') },
-                uGridScale: { value: 301 },
-                uDotRadius: { value: 0.08 },
-
-                uRingColor: { value: new THREE.Color('#ffffff') },
-                uCentreColor: { value: new THREE.Color('#fafafa') },
-                uPodiumRadius: { value: 0 },
-                uRingThickness: { value: 0.0008 },
-                uCentreOpacity: { value: 0.6 },
-            },
-        });
-        const progressFloorMesh = new THREE.Mesh(progressFloorGeo, this.progressFloorMat);
-        progressFloorMesh.rotation.x = Math.PI * -0.5;
-        progressFloorMesh.position.y = -0.2;
-        progressFloorMesh.renderOrder = 1;
-        this.scene.add(progressFloorMesh);
-
-        this.params.developmentStage = {
-            Just_Dots: 'A',
-            Radial_Gradient: 'B',
-            Fresnel_Opacity: 'C',
-            Podium: 'D'
-        }
-
-        // Debug
-        // if(this.debug.active)
-        // {
-        //     this.globalDebugFolder.add(text, 'developmentStage', { Just_Dots: 'A', Radial_Gradient: 'B', Fresnel_Opacity: 'C', Podium: 'D' } );
-        //     this.globalDebugFolder.add(text, 'developmentStage', { Just_Dots: 'A', Radial_Gradient: 'B', Fresnel_Opacity: 'C', Podium: 'D' } );
-        // };
     }
 
     podiumOpenAnimation(_delay)
@@ -314,7 +274,7 @@ export default class Object
     {
         this.params.showWatermark = true;
         this.params.custoScale = 0.35;
-        this.params.custoAlpha = 0.2;
+        this.params.custoAlpha = 0.1;
         this.params.custoOffset = 0;
         
         const texture = this.resources.items.customuseIcon;
