@@ -38,7 +38,7 @@ export default class Object
             this.globalDebugFolder = this.debug.ui.addFolder('global');
             this.dotsDebugFolder.close();
             this.floorDebugFolder.close();
-            this.podiumDebugFolder.close();
+            // this.podiumDebugFolder.close();
             this.globalDebugFolder.close();
 
             this.globalDebugFolder.add(this.params, 'Light_Mode');
@@ -286,8 +286,9 @@ export default class Object
 
     setCustomuseIcon()
     {
-        this.params.custoScale = 0.385;
+        this.params.custoScale = 0.35;
         this.params.custoAlpha = 0.1;
+        this.params.custoOffset = 0;
         
         const texture = this.resources.items.customuseIcon;
         texture.encoding = THREE.sRGBEncoding;
@@ -301,12 +302,13 @@ export default class Object
             {
                 uTexture: { value: texture },
                 uScale: { value: this.params.custoScale },
+                uOffset: { value: this.params.custoOffset },
                 uAlpha: { value: this.params.custoAlpha }
             },
         });
         const custoMesh = new THREE.Mesh(custoGeo, this.custoMat);
         custoMesh.rotation.x = Math.PI * -0.5;
-        custoMesh.position.y = -0.19;
+        custoMesh.position.y = -0.196;
         custoMesh.renderOrder = 5;
 
         this.scene.add(custoMesh);
@@ -317,6 +319,10 @@ export default class Object
             this.podiumDebugFolder.add(this.params, 'custoScale')
                 .min(0).max(1).step(0.01).name('custoScale').onChange(() => {
                     this.custoMat.uniforms.uScale.value = this.params.custoScale;
+                })
+            this.podiumDebugFolder.add(this.params, 'custoOffset')
+                .min(-1.25).max(1).step(0.01).name('custoOffset').onChange(() => {
+                    this.custoMat.uniforms.uOffset.value = this.params.custoOffset;
                 })
             this.podiumDebugFolder.add(this.params, 'custoAlpha')
                 .min(0).max(1).step(0.01).name('custoAlpha').onChange(() => {
