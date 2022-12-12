@@ -17,6 +17,7 @@ export default class Object
         this.time = this.experience.time;
         this.loading = this.experience.loading;
         this.renderer = this.experience.renderer;
+        this.characterVisible = true;
 
         this.params = {
             Podium_Animation: () => {
@@ -38,15 +39,14 @@ export default class Object
             this.globalDebugFolder = this.debug.ui.addFolder('global');
             this.dotsDebugFolder.close();
             this.floorDebugFolder.close();
-            // this.podiumDebugFolder.close();
-            this.globalDebugFolder.close();
+            this.podiumDebugFolder.close();
+            // this.globalDebugFolder.close();
 
             this.globalDebugFolder.add(this.params, 'Light_Mode');
             this.globalDebugFolder.add(this.params, 'Dark_Mode');
         }
 
         this.setFloor();
-        // this.setProgressFloor();
         this.setShadowPlane();
         this.setCustomuseIcon();
         this.setCharacter();
@@ -55,6 +55,11 @@ export default class Object
 
     setFloor()
     {
+        this.params.showDots = true;
+        this.params.showGradient = true;
+        this.params.showFresnel = true;
+        this.params.showPodium = true;
+        
         this.params.floorColorLight = '#fafafa';
         this.params.floorColorDark = '#212121';
 
@@ -87,6 +92,11 @@ export default class Object
                 uPodiumRadius: { value: 0 },
                 uRingThickness: { value: 0.0008 },
                 uCentreOpacity: { value: 0.6 },
+
+                uDotsBool: { value: this.params.showDots },
+                uGradientBool: { value: this.params.showGradient },
+                uFresnelBool: { value: this.params.showFresnel },
+                uPodiumBool: { value: this.params.showPodium },
             },
         });
         const floorMesh = new THREE.Mesh(floorGeo, this.floorMat);
@@ -138,6 +148,20 @@ export default class Object
                 .min(0).max(0.1).step(0.001).name('pulseAmplitude');
             this.podiumDebugFolder.add(this.params, 'podiumPulseFrequency')
                 .min(0).max(5).step(0.1).name('pulseFrequency');
+
+            // Bools
+            this.globalDebugFolder.add(this.params,'showDots').onChange(() => {
+                this.floorMat.uniforms.uDotsBool.value = this.params.showDots;
+            })
+            this.globalDebugFolder.add(this.params,'showGradient').onChange(() => {
+                this.floorMat.uniforms.uGradientBool.value = this.params.showGradient;
+            })
+            this.globalDebugFolder.add(this.params,'showFresnel').onChange(() => {
+                this.floorMat.uniforms.uFresnelBool.value = this.params.showFresnel;
+            })
+            this.globalDebugFolder.add(this.params,'showPodium').onChange(() => {
+                this.floorMat.uniforms.uPodiumBool.value = this.params.showPodium;
+            })
         };
     }
 
@@ -249,7 +273,7 @@ export default class Object
 
     setCharacter()
     {
-        this.params.animateCharacter = true;
+        this.params.showCharacter = true;
         
         const characterResource = this.resources.items.characterModel;
 
@@ -280,14 +304,17 @@ export default class Object
 
         if(this.debug.active)
         {
-            this.globalDebugFolder.add(this.params, 'animateCharacter');
+            this.globalDebugFolder.add(this.params,'showCharacter').onChange(() => {
+                character.visible = this.params.showCharacter;
+            })
         }
     }
 
     setCustomuseIcon()
     {
+        this.params.showWatermark = true;
         this.params.custoScale = 0.35;
-        this.params.custoAlpha = 0.1;
+        this.params.custoAlpha = 0.2;
         this.params.custoOffset = 0;
         
         const texture = this.resources.items.customuseIcon;
@@ -328,6 +355,9 @@ export default class Object
                 .min(0).max(1).step(0.01).name('custoAlpha').onChange(() => {
                     this.custoMat.uniforms.uAlpha.value = this.params.custoAlpha;
                 })
+            this.globalDebugFolder.add(this.params,'showWatermark').onChange(() => {
+                custoMesh.visible = this.params.showWatermark;
+            })
         };
     }
 
@@ -369,9 +399,6 @@ export default class Object
 
     update()
     {
-        if(this.params.animateCharacter)
-        {
-            this.animation.mixer.update(this.time.delta * 0.0002);
-        }
+        this.animation.mixer.update(this.time.delta * 0.0002);
     }
 }

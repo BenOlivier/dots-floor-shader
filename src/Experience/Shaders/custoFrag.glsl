@@ -21,11 +21,10 @@ void main()
     float mask = 1.0 - step(vUv.y, 0.5);
     // Mix the bottom tile with the rotated top tile
     vec2 combinedUv = mix(tiledUv, rotatedUv, mask);
-    // Apply scale + offset to UV tiles
+    // Apply scale
     combinedUv = (combinedUv - 0.5) / uScale + 0.5;
-
+    // Apply offset
     combinedUv = vec2(combinedUv.x, combinedUv.y + uOffset);
-
     // Texture color
     vec4 color = texture2D(uTexture, combinedUv);
 
