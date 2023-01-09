@@ -15,6 +15,8 @@ uniform float uPodiumRadius;
 uniform float uRingThickness;
 uniform float uCentreOpacity;
 // Bools - DELETE IN PRODUCTION IMPLEMENTATION
+uniform bool uOffsetBool;
+uniform bool uUVsBool;
 uniform bool uDotsBool;
 uniform bool uGradientBool;
 uniform bool uFresnelBool;
@@ -50,6 +52,6 @@ void main()
 
 
     // BOOLS - DELETE IN PRODUCTION IMPLEMENTATION
-    gl_FragColor = vec4(uPodiumBool? combinedColor : uDotsBool? floorColor : uFloorColor, 
+    gl_FragColor = vec4(uOffsetBool? vec3(offsetrows) : uUVsBool? vec3(tiledUv, 0.0) : uPodiumBool? combinedColor : uDotsBool? floorColor : uFloorColor, 
         (uGradientBool? radialGradient : 1.0) * (uFresnelBool? fresnelTerm : 1.0));
 }

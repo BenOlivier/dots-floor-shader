@@ -57,6 +57,8 @@ export default class Object
 
     setFloor()
     {
+        this.params.showOffset = false;
+        this.params.showUVs = false;
         this.params.showDots = true;
         this.params.showGradient = true;
         this.params.showFresnel = true;
@@ -94,6 +96,8 @@ export default class Object
                 uRingThickness: { value: 0.0008 },
                 uCentreOpacity: { value: 0.6 },
 
+                uOffsetBool: { value: this.params.showOffset },
+                uUVsBool: { value: this.params.showUVs },
                 uDotsBool: { value: this.params.showDots },
                 uGradientBool: { value: this.params.showGradient },
                 uFresnelBool: { value: this.params.showFresnel },
@@ -155,6 +159,12 @@ export default class Object
             //     });
 
             // Bools
+            this.globalDebugFolder.add(this.params,'showOffset').onChange(() => {
+                this.floorMat.uniforms.uOffsetBool.value = this.params.showOffset;
+            })
+            this.globalDebugFolder.add(this.params,'showUVs').onChange(() => {
+                this.floorMat.uniforms.uUVsBool.value = this.params.showUVs;
+            })
             this.globalDebugFolder.add(this.params,'showDots').onChange(() => {
                 this.floorMat.uniforms.uDotsBool.value = this.params.showDots;
             })
